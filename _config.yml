@@ -5,7 +5,7 @@ pygments: true
 paginate: 8
 permalink: /:title
 
-title: BeiYuu.com
-url: http://beiyuu.com
+title: itweige.com
+url: http://www.itweige.com
 feed: /atom.xml
-author_info: <a href="http://beiyuu.com/">BeiYuu</a>
+author_info: <a href="http://www.itweige.com/">Masterwind</a>
