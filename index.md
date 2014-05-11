@@ -7,7 +7,6 @@ layout: home
         <ul class="artical-cate">
             <li class="on"><a href="/"><span>Blog</span></a></li>
             <li><a href="/project"><span>Project</span></a></li>
-			<li><a href="/webDevelop"><span>webDevelop</span></a></li>
         </ul>
 
         <div class="cate-bar"><span id="cateBar"></span></div>
