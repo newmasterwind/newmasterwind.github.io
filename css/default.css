@@ -102,12 +102,12 @@ pre ol{margin-left:25px;list-style-type:decimal;}
 .index-content .title-desc {color:#999;font-size:14px;line-height:1.6em;}
 
 .index-content .artical-cate { width:70%; margin:0 auto; }
-.index-content .artical-cate li { display:inline-block; *float:left; zoom:1; font-size:18px; width:40%; cursor:pointer;text-align:center; }
+.index-content .artical-cate li { display:inline-block; *float:left; zoom:1; font-size:18px; width:50%; cursor:pointer;text-align:center; }
 .index-content .artical-cate li a,
 .index-content .artical-cate li a:visited { display:inline-block; zoom:1; color:#000; width:100%; }
 .index-content .artical-cate li a:hover { text-decoration:none; }
 .index-content .artical-cate li.on span{ color:red; }
-
+.index-content .artical-cate li span{ font-size:20px bold; }
 .index-content .cate-bar { height:3px; width:70%; margin:0 auto;margin-bottom:100px; }
 .index-content #cateBar { display:inline-block; zoom:1; height:3px; background:red; position:relative; width:0; }
 
