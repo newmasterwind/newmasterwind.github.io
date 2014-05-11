@@ -14,7 +14,7 @@ layout: home
         <ul class="artical-list">
         {% for post in site.categories.blog %}
             <li>
-                <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+               <b>>></b><h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
                 <div class="title-desc"><h3>文章简介：</h3>{{ post.description }}</div>
             </li>
         {% endfor %}
