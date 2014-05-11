@@ -5,8 +5,8 @@ layout: home
 <div class="index-content blog">
     <div class="section">
         <ul class="artical-cate">
-            <li class="on"><a href="/"><span>Blog</span></a></li>
-            <li><a href="/project"><span>Project</span></a></li>
+            <li class="on"><a href="/"><span>生活滴水</span></a></li>
+            <li><a href="/project"><span>技术击石</span></a></li>
         </ul>
 
         <div class="cate-bar"><span id="cateBar"></span></div>

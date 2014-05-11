@@ -41,7 +41,7 @@ a.external:hover {background-position:right -15px;}
 .entry-title a:hover {text-decoration:none;}
 .entry-date {text-align:center;color:#999;margin-bottom:60px;font-size:14px;}
 
-h2 {font-size:22px;font-weight:bold;margin-bottom:25px;}
+h2 {font-size:22px;font-weight:bold;margin-top:15px !important;}
 h3 {font-size:18px;font-weight:bold;margin-bottom:25px;}
 h4,h5,h6 {font-weight:bold;margin-bottom:15px;}
 p {margin-bottom:40px;line-height:1.8em;}
@@ -95,7 +95,7 @@ pre ol{margin-left:25px;list-style-type:decimal;}
 .index-content .section { margin-left:30%; padding-top:80px; padding-right:15%; ;}
 
 .index-content .artical-list { width:70%; margin:0 auto; }
-.index-content .artical-list li { margin-bottom:70px; }
+.index-content .artical-list li { margin-bottom:40px; border-top:ridge 5px;}
 .index-content h2 { font-size:20px; margin-bottom:15px; word-break: break-all;}
 .index-content h2 a { color:#444 }
 .index-content h2 a:hover { color:#E50053; text-decoration:none; }
