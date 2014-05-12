@@ -104,7 +104,7 @@ $(document).ready(function(){
             var indexCon = '<div id="menuIndex" class="sidenav"></div>';
 
             $('#content').append(indexCon);
-
+			$('#menuIndex').append('<span class="sideNavTitle">本文导航</span>');
             $('#menuIndex')
                 .append($(tmpl))
                 .delegate('a','click',function(e){
