@@ -135,7 +135,7 @@ h3.about {color:#777;margin-top:20px;font-size:22px;margin-bottom:10px}
 #menuIndex li.h3{padding-left:25px;}
 
 .home-menu { position:fixed; top:15px; left:15px; z-index:5; font-size:0; }
-.github-menu{ position:fixed; top:115px; left:15px; z-index:5; font-size:0; }
+.github-menu{ position:fixed; top:105px; left:15px; z-index:5; font-size:0;border: 5px solid #dedede; -moz-border-radius: 15px; -webkit-border-radius: 15px;  }
 .home-menu-icon { line-height:38px; padding:0 8px; display:inline-block; color:#fff; font-size:18px;  background:#000; }
 .home-follow { margin-left:2px; line-height:38px; padding:0 8px; display:inline-block; color:#fff; font-size:18px; background:#000;  }
 .home-menu-icon:hover,
