@@ -9,4 +9,4 @@ category: blog
 ####《其实都没有》
 ####《初爱》
 ####《给未来的自己》
-![杨宗纬](/path/to/img.jpg "催泪歌王：杨宗纬")
+![杨宗纬](/images/blogImages/yzw.jpg "催泪歌王：杨宗纬")
