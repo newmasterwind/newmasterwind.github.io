@@ -17,7 +17,7 @@ layout: home
                 <h2>
                     <b>>></b><a href="{{ post.url }}">{{ post.title }}</a>
                 </h2>
-                <div class="title-desc"><h3>文章简介：</h3>{{ post.description }}</div>
+                <div class="title-desc"><h3>文章简介：</h3><b>{{ post.date|date:"%Y-%m-%d" }}</b> :&nbsp;{{ post.description }}</div>
             </li>
         {% endfor %}
         </ul>
