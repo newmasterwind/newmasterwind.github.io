@@ -71,7 +71,6 @@ Git是版本管理的未来，他的优点我不再赘述，相关资料很多�
 
 ###3、生成新的SSH Key：
 输入下面的代码，就可以生成新的key文件，我们只需要默认设置就好，所以当需要输入文件名的时候，回车就好。
-
     $ ssh-keygen -t rsa -C "邮件地址@youremail.com"
     Generating public/private rsa key pair.
     Enter file in which to save the key (/Users/your_user_directory/.ssh/id_rsa):<回车就好>
