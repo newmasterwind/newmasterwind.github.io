@@ -51,18 +51,20 @@
         <p class="entry-date">2014-05-15</p>
         <h2>Thread类--关键方法</h2>
 
+<hr />
+
 <p>Thread类的关键方法有：</p>
 
 <ul>
-<li>yield()   ：让出cpu使用权，但是马上进入可执行状态，给其他线程执行机会、让同等优先权的线程运行（但并不保证当前线程会被JVM再次调度、使该线程重新进入Running状态），如果没有同等优先权的线程，那么yield()方法将不会起作用;</li>
-<li>sleep(time) ：交出cpu使用权，进入限时等待状态，过了time之后重新进入可执行状态。 作用：保持对象锁，让出CPU，调用目的是不让当前线程独自霸占该进程所获取的CPU资源，以留一定的时间给其他线程执行的机会；</li>
-<li>start()  ：线程启动，变为可执行状态，也叫就绪状态;</li>
-<li>run() ：进入执行状态;</li>
-<li>stop() :结束，进入死亡状态；</li>
-<li>interrupt() ：interrupt对于一个线程，标示着它应该停下它正在做的事情来做些其他的。具体的是由程序员来决定一个线程如何回应interrupt，一般都是让这个线程终止；</li>
-<li>join()：“等待该线程终止”，这里需要理解的就是该线程是指的主线程等待子线程的终止。在很多情况下，主线程生成并起动了子线程，如果子线程里要进行大量的耗时的运算，主线程往往将于子线程之前结束，但是如果主线程处理完其他的事务后，需要用到子线程的处理结果，也就是主线程需要等待子线程执行完成之后再结束，这个时候就要用到join()方法了。使用方法：在当前线程A中，有一个B线程的示例线程bt，则在A中执行bt.join()之后，只能等bt执行完才能执行A线程剩下的代码；</li>
-<li>join(time):跟join()类似，只不过限定了一个时间；</li>
-<li>currentThread():当前正在执行的线程，使用方法如Thread.currentThread().getName()。</li>
+<li><strong>yield()</strong>   ：让出cpu使用权，但是马上进入可执行状态，给其他线程执行机会、让同等优先权的线程运行（但并不保证当前线程会被JVM再次调度、使该线程重新进入Running状态），如果没有同等优先权的线程，那么yield()方法将不会起作用;</li>
+<li><strong>sleep(time)</strong> ：交出cpu使用权，进入限时等待状态，过了time之后重新进入可执行状态。 作用：保持对象锁，让出CPU，调用目的是不让当前线程独自霸占该进程所获取的CPU资源，以留一定的时间给其他线程执行的机会；</li>
+<li><strong>start()</strong>  ：线程启动，变为可执行状态，也叫就绪状态;</li>
+<li><strong>run()</strong> ：进入执行状态;</li>
+<li><strong>stop()</strong> :结束，进入死亡状态；</li>
+<li><strong>interrupt()</strong> ：interrupt对于一个线程，标示着它应该停下它正在做的事情来做些其他的。具体的是由程序员来决定一个线程如何回应interrupt，一般都是让这个线程终止；</li>
+<li><strong>join()</strong>：“等待该线程终止”，这里需要理解的就是该线程是指的主线程等待子线程的终止。在很多情况下，主线程生成并起动了子线程，如果子线程里要进行大量的耗时的运算，主线程往往将于子线程之前结束，但是如果主线程处理完其他的事务后，需要用到子线程的处理结果，也就是主线程需要等待子线程执行完成之后再结束，这个时候就要用到join()方法了。使用方法：在当前线程A中，有一个B线程的示例线程bt，则在A中执行bt.join()之后，只能等bt执行完才能执行A线程剩下的代码；</li>
+<li><strong>join(time)</strong>:跟join()类似，只不过限定了一个时间；</li>
+<li><strong>currentThread()</strong>:当前正在执行的线程，使用方法如Thread.currentThread().getName()。</li>
 </ul>
 
 
@@ -203,7 +205,7 @@ object中的方法：</p>
 
 <ul>
 <li>ExecutorService： 真正的线程池接口。</li>
-<li>ScheduledExecutorService: 能和Timer/TimerTask类似，解决那些需要任务重复执行的问题。</li>
+<li>ScheduledExecutorService: 和Timer/TimerTask类似，解决那些需要任务重复执行的问题。</li>
 <li>ThreadPoolExecutor : ExecutorService的默认实现。</li>
 </ul>
 
@@ -225,53 +227,52 @@ object中的方法：</p>
 
 <p>当一个任务通过execute(Runnable)方法欲添加到线程池时：</p>
 
-<ol>
+<ul>
 <li>如果运行的线程少于 corePoolSize，则 Executor 始终首选添加新的线程，而不进行排队。（如果当前运行的线程小于corePoolSize，则任务根本不会存放，添加到queue中，而是直接抄家伙（thread）开始运行）</li>
 <li>如果运行的线程等于或多于 corePoolSize，则 Executor 始终首选将请求加入队列，而不添加新的线程。</li>
 <li><p>如果无法将请求加入队列，则创建新的线程，除非创建此线程超出 maximumPoolSize，在这种情况下，任务将被拒绝。</p>
 
-<p>   public void execute(Runnable command) {
-         if (command == null)
-             throw new NullPointerException();
-         /*</p>
-
-<pre><code>      * Proceed in 3 steps:
-      *
-      * 1. If fewer than corePoolSize threads are running, try to
-      * start a new thread with the given command as its first
-      * task. The call to addWorker atomically checks runState and
-      * workerCount, and so prevents false alarms that would add
-      * threads when it shouldn't, by returning false.
-      *
-      * 2. If a task can be successfully queued, then we still need
-      * to double-check whether we should have added a thread
-      * (because existing ones died since last checking) or that
-      * the pool shut down since entry into this method. So we
-      * recheck state and if necessary roll back the enqueuing if
-      * stopped, or start a new thread if there are none.
-      *
-      * 3. If we cannot queue task, then we try to add a new
-      * thread. If it fails, we know we are shut down or saturated
-      * and so reject the task.
-      */
-     int c = ctl.get();
-     if (workerCountOf(c) &lt; corePoolSize) {
-         if (addWorker(command, true))
-             return;
-         c = ctl.get();
-     }
-     if (isRunning(c) &amp;&amp; workQueue.offer(command)) {
-         int recheck = ctl.get();
-         if (! isRunning(recheck) &amp;&amp; remove(command))
-             reject(command);
-         else if (workerCountOf(recheck) == 0)
-             addWorker(null, false);
-     }
-     else if (!addWorker(command, false))
-         reject(command);
- }
+<pre><code>  public void execute(Runnable command) {
+      if (command == null)
+          throw new NullPointerException();
+      /*
+       * Proceed in 3 steps:
+       *
+       * 1. If fewer than corePoolSize threads are running, try to
+       * start a new thread with the given command as its first
+       * task. The call to addWorker atomically checks runState and
+       * workerCount, and so prevents false alarms that would add
+       * threads when it shouldn't, by returning false.
+       *
+       * 2. If a task can be successfully queued, then we still need
+       * to double-check whether we should have added a thread
+       * (because existing ones died since last checking) or that
+       * the pool shut down since entry into this method. So we
+       * recheck state and if necessary roll back the enqueuing if
+       * stopped, or start a new thread if there are none.
+       *
+       * 3. If we cannot queue task, then we try to add a new
+       * thread. If it fails, we know we are shut down or saturated
+       * and so reject the task.
+       */
+      int c = ctl.get();
+      if (workerCountOf(c) &lt; corePoolSize) {
+          if (addWorker(command, true))
+              return;
+          c = ctl.get();
+      }
+      if (isRunning(c) &amp;&amp; workQueue.offer(command)) {
+          int recheck = ctl.get();
+          if (! isRunning(recheck) &amp;&amp; remove(command))
+              reject(command);
+          else if (workerCountOf(recheck) == 0)
+              addWorker(null, false);
+      }
+      else if (!addWorker(command, false))
+          reject(command);
+  }  
 </code></pre></li>
-</ol>
+</ul>
 
 
 <p><strong>分析可得：当新任务到来时，线程池处理优先级：corePollSize>任务队列>maximumPoolSize。</strong></p>
