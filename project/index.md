@@ -15,7 +15,7 @@ layout: home
         {% for post in site.categories.project %}
             <li>
                 <h2>
-                    <b>>></b><a href="{{ post.url }}">{{ post.title }}</a>
+                    <b>>&nbsp;</b><a href="{{ post.url }}">{{ post.title }}</a>
                 </h2>
                 <div class="title-desc"><b>{{ post.date|date:"%Y-%m-%d" }}</b> :&nbsp;{{ post.description }}</div>
             </li>

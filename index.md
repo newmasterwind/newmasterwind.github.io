@@ -14,7 +14,7 @@ layout: home
         <ul class="artical-list">
         {% for post in site.categories.blog %}
             <li>
-               <h2><b>>></b><a href="{{ post.url }}">{{ post.title }}</a></h2>
+               <h2><b>>&nbsp;</b><a href="{{ post.url }}">{{ post.title }}</a></h2>
                 <div class="title-desc"><b>{{ post.date|date:"%Y-%m-%d" }}</b>:&nbsp;{{ post.description }}</div>
             </li>
         {% endfor %}
