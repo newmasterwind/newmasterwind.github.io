@@ -4,7 +4,7 @@
    <title>疯子伟哥的世界</title>
    <link href="http://www.itweige.com/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://www.itweige.com" rel="alternate" type="text/html" />
-   <updated>2014-05-18T11:20:21+08:00</updated>
+   <updated>2014-05-18T13:28:44+08:00</updated>
    <id>http://www.itweige.com</id>
    <author>
      <name></name>
@@ -1238,8 +1238,11 @@ sudo gem sources -a http://ruby.taobao.org/
 
 &lt;h3&gt;博客简介:&lt;/h3&gt;
 
-&lt;p&gt;&lt;strong&gt;&lt;a href=&quot;/&quot;&gt;生活滴水&lt;/a&gt;&lt;/strong&gt;：汇聚生活思考点点滴滴。&lt;br/&gt;
-&lt;strong&gt;&lt;a href=&quot;/project&quot;&gt;技术击石&lt;/a&gt;&lt;/strong&gt;：滴水穿石，积累铸造成功。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href=&quot;/&quot;&gt;生活滴水&lt;/a&gt;&lt;/strong&gt;：汇聚生活思考点点滴滴。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href=&quot;/project&quot;&gt;技术击石&lt;/a&gt;&lt;/strong&gt;：滴水穿石，积累铸造成功。&lt;/li&gt;
+&lt;/ul&gt;
+
 
 &lt;p&gt;人生就是一场旅行，不必在乎目的地，在乎的只是沿途的风景以及看风景的心情。&lt;/p&gt;
 
