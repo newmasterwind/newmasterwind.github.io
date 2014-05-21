@@ -4,13 +4,480 @@
    <title>疯子伟哥的世界</title>
    <link href="http://www.itweige.com/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://www.itweige.com" rel="alternate" type="text/html" />
-   <updated>2014-05-18T21:26:17+08:00</updated>
+   <updated>2014-05-21T18:06:59+08:00</updated>
    <id>http://www.itweige.com</id>
    <author>
      <name></name>
      <email></email>
    </author>
 
+   
+   <entry>
+     <title>如何快速搭建流媒体服务器</title>
+     <link href="http://itweige.com/streamMedia-server"/>
+     <updated>2014-05-21T00:00:00+08:00</updated>
+     <id>http://itweige.com/streamMedia-server</id>
+     <content type="html">&lt;blockquote&gt;&lt;p&gt;在之前的一文中介绍了关于流媒体及flv的相关知识：&lt;a href=&quot;http://itweige.com/flv-stream-media/&quot;&gt;流媒体及FLV定点播放浅析&lt;/a&gt;，本文将手把手带来如何实现一个基于flv格式视频的流媒体服务器。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;FLV视频发布方式&lt;/h2&gt;
+
+&lt;hr/&gt;
+
+
+&lt;h3&gt;HTTP和RTMP方式简介&lt;/h3&gt;
+
+&lt;p&gt;　　现在网络上的视频网站youtube，6rooms和56，发现他们用的播放协议也都是Http(&lt;strong&gt;这个可以用chrome插件或者firebug观察到&lt;/strong&gt;)。按说FMS/Red5作为流媒体服务器，是专门做过优化的。但为何这些网站都没采用RTMP 的协议呢。RTMP 协议和Http比有哪些优势呢，或者说：我们为什么要使用FMS/Red5呢？&lt;br/&gt;
+　　两种协议HTTP和RTMP ，有一些不同：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;HTTP方式&lt;/strong&gt;：先通过网络将FLV下载到本地缓存（例如youku是默认存放缓存在：C:\Users\xxx用户名\Documents\Youku Files\transcode中，其中的.dat文件就是加密后的视频缓存文件），然后再通过NetConnection的本地连接来播放这个FLV，这种方法是播放本地的视频，并不是播放服务器的视频，因此在本地缓存里可以找到这个FLV。其优点就是服务器下载完这个FLV，服务器就没有消耗了，节省服务器消耗。其缺点就是FLV会缓存在客户端，对FLV的保 密性不好（利用dat格式文件可以有效缓解这种问题）。HTTP的视频协议，主要是在互联网普及之后。在互联网上看视频的需求下形成的。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RTMP方式&lt;/strong&gt;：通过NetConnection连接到FMS/Red5服务器，并实时播放服务器的FLV文件，这种方式可以任意选择视频播放点（SEEK()），并不象HTTP方式需要缓存完整个FLV文件到本地才可以任意选择播放点。其优点就是FLV不会缓存在客户端，FLV的保密性好，其缺点就是消耗服务器资源，连接始终是实时的。&lt;br/&gt;
+　一句话，一个是本地播放，一个是服务器实时播放，因需而定。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;HTTP方式变更史&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;最初的HTTP视频协议，没有任何特别之处，就是通用的HTTP文件渐进式下载&lt;/strong&gt;。本质就是下载视频文件，而利用视频文件本身的特点，就是存在头部信息，和部分视频帧数据，就完全可以解码播放了。显然这种方式需要将视频文件的头部信息放在文件的前面。有些例如faststart工具，就是专门做这个功能的。但是最为原始的状态下，视频无法进行快进或者跳转播放到文件尚未被下载到的部分。这个时候对HTTP协议提出了range-request的要求。这个目前几乎所有HTTP的服务器都支持了。range-request，是请求文件的部分数据，指定偏移字节数。在视频客户端解析出视频文件的头部后，就可以判断后续视频相应的帧的位置了。或者根据码率等信息，计算相应的为位置。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;支持HTTP range-request的服务器&lt;/strong&gt;，目前就可以支持我们一般网络看视频的要求了。但是，这种方式，无法支持实时视频流，或者准实时视频流。因为视频流，是不存在一个视频文件的概念的。HTTP协议播放视频的好处，就是简单。采取通用的HTTP服务器，就可以提供服务，不需要专门类型的服务器，也不需要特别的网络端口，穿过路由器防火墙一点都没有问题。而且还可以利用通用的CDN来简化视频的部署分发的工作，减少带宽的使用。&lt;strong&gt;这个是目前用于PC端或者网页端，视频点播业务，最常见的解决方案&lt;/strong&gt;。客户端的实现，一般采用flash完成，flash本是的videoplayer或者videodisplay控件就可以完成。资源一般采用flv格式，也可以使用mp4格式。在此基础上，多家公司推出了自己的解决方法。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;HTTP方式和RTMP方式比较&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;rtmp从协议实现来讲需要一定的客户端上行流量，而http则小得多，因此在网络环境不佳的条件下其性能不如http；&lt;/li&gt;
+&lt;li&gt;rtmp虽然有服务器端开源实现，但是其性能和强度终究不如FMS，例如用于非关键帧seek的Enhanced Seeking和多码流带宽自适应特性等功能由服务器端实现，其协议细节并未公开；&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;另外rtmp方案也无法覆盖iOS/Andriod等移动设备。&lt;/p&gt;
+
+&lt;p&gt;  综合部署成本，复杂度和普适性考虑，对于常规直播点播应用，HTTP方案优于RTMP方案。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;开始搭建流媒体服务器&lt;/h2&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;　　了解了上述知识背景，下面开始进行服务器的搭建，本服务器的架构将是：&lt;strong&gt;Jwplayer+Red5+Nginx+RTMP&lt;/strong&gt;,其中前端播放器采用了Adobe 开源播放器Jwplayer，流媒体服务器采用Red5，传输协议RTMP。（其实Nginx服务器也是一款不错的选择，其既可以进行流媒体服务，还可以提供负载均衡/反向代理/缓存等多种服务，可惜本文只提供流媒体服务，故采用Red5这款开源服务器。）&lt;br/&gt;
+　　利用red5，自动为其目录下的每个flv文件生成filename.meta的xml信息文件（文件第一次播放时自动产生，所以第一次播放会有一些延迟时间用来产生meta文件，是不是可以实现meta文件提前generate呢？比如在文件放入目录后，服务器端有一个进程轮询查询，查询到新的文件进入，提前先产生meta文件），其中包含了flv视频的关键帧，用于seek操作。&lt;/p&gt;
+
+&lt;h3&gt;前端播放器配置&lt;/h3&gt;
+
+&lt;p&gt;jwplayer的用法很简单，自行百度，此处给出一个配置样例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var videoStreamer=&#39;rtmp://172.16.90.238:1935/vod/&#39;;//流媒体服务地址
+var player = jwplayer(&#39;videoDiv&#39;).setup( {
+  width : &quot;100%&quot;,
+  height : 280,
+  flashplayer : &#39;jwplayer/pl.swf&#39;,
+  image : &#39;images/roadPreview.jpg&#39;,
+  controlbar : &#39;bottom&#39;,
+  file : &quot;red5&quot;,//媒体文件根目录
+  provider : &#39;rtmp&#39;,//传输协议
+  streamer : videoStreamer//配置服务地址
+ });
+
+player.load( [ {
+   file : videoUrl//可以通过这种方式更换视频地址，注意不是服务地址
+  } ]);
+player.play();//开始播放
+player.seek(preVideoTime);//根据时间，进行seek地位播放
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;Red5服务器配置&lt;/h3&gt;
+
+&lt;p&gt;　　利用red5，自动为其目录下的每个flv文件生成filename.meta的xml信息文件（文件第一次播放时自动产生，所以第一次播放会有一些延迟时间用来产生meta文件，是不是可以实现meta文件提前generate呢？比如在文件放入目录后，服务器端有一个进程轮询查询，查询到新的文件进入，提前先产生meta文件），其中包含了flv视频的关键帧，用于seek操作。&lt;/p&gt;
+
+&lt;p&gt;参考链接：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://red5.org/downloads/red5/1_0/&quot;&gt;Red5下载&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.red5.org/downloads/docs/&quot;&gt;安装说明文档&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;在开启Red5前，需首先查看1935端口是否被占用，Windows下查看当前服务：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#查看当前系统被占用的端口  
+netstat –ano –p tcp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果Red5的默认端口1935被占用了，可以为其配置新的端口号：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#设置为一个未被其他进程占用的端口，今后流媒体client都通过此端口请求流媒体数据
+rtmp.port=1936
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在使用Red5搭建流媒体服务器时，需要配置其对外提供流媒体的IP（文档位置Red5/conf/ red5.properties）：　　&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#本地通过localhost:port方式访问时，使用此配置。（与下面的配置二选一）
+rtmp.host=127.0.0.1
+#远程/实际应用场景中通过 IP:port方式访问时，使用此配置。（将下一行#去掉，即生效）
+#rtmp.host=10.210.46.11
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;[NOTE]：&lt;strong&gt;如果上述rtmp.host配置的IP地址，与服务器上实际获取的IP不同，则Red5服务无法正常开启。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Red5提供的功能很强大，在提供流媒体服务的同时，还开启了自带的Tomcat，同样需要注意将Tomcat的端口配置为一个未占用的端口。（文档位置Red5/conf/ red5.properties）　　&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#配置Red5自带的Tomcat服务。
+http.port=8888
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;启动Red5流媒体服务器：
+直接运行Red5安装路径下的red5.bat文件，当出现如下信息时，表示已经成功启动Red5流媒体服务器：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[INFO] [Launcher:/installer] org.red5.server.service.Installer - Installer service created
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Red5提供流媒体服务，即，可以将其上存储的视频数据，以可控的数据流形式，向外提供服务。通常将需要对外提供的原始视频数据，存放于如下位置：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Red5/webapps/vod/streams/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;注：本节内容从ningg大神那里学到的，这里只是引用，班门弄斧了！&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;搭建完成，此时就实现了一个基于RTMP协议和FLV格式视频文件的流媒体服务器搭建。&lt;br/&gt;
+上一个我们开发的一个项目视频播放展示图:&lt;br/&gt;
+&lt;img src=&quot;/images/projectImage/stream-server-show.png&quot; alt=&quot;展示图&quot; /&gt;&lt;br/&gt;
+更好的优化方案，有待继续深入研究～。～&lt;/p&gt;
+
+&lt;p&gt;最后附RTMP协议详解：
+&lt;a href=&quot;http://blog.csdn.net/defonds/article/details/17403225&quot;&gt;实时消息传输协议 RTMP(Real Time Messaging Protocol)&lt;/a&gt;&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>初探Nodejs</title>
+     <link href="http://itweige.com/Nodejs-rookie"/>
+     <updated>2014-05-21T00:00:00+08:00</updated>
+     <id>http://itweige.com/Nodejs-rookie</id>
+     <content type="html">&lt;p&gt;初探nodejs，占个坑位，这两天浅浅学习下，过两天补上学习内容。&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>javascript面向对象编程浅析</title>
+     <link href="http://itweige.com/javascript-oop"/>
+     <updated>2014-05-20T00:00:00+08:00</updated>
+     <id>http://itweige.com/javascript-oop</id>
+     <content type="html">&lt;h3&gt;什么是面向对象&lt;/h3&gt;
+
+&lt;p&gt;面向对象最基本的三大特性是继承、封装、多态，javascript不是面向对象的语言，但能实现继承和封装两个特性。&lt;/p&gt;
+
+&lt;h3&gt;弱类型&lt;/h3&gt;
+
+&lt;p&gt;定义变量类型：&lt;/p&gt;
+
+&lt;p&gt;布尔型bool、数值型、字符串类型、函数类型、数组类型、空类型、未定义类型&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var a = &quot;&quot;; //字符串
+var b = []; //数组
+var c = function(){} //function函数
+var d = {}; //对象
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;字面量:&lt;/p&gt;
+
+&lt;p&gt;字面量就类似于我们使用的json数据格式，分为字符串字面量、数组字面量、函数字面量、对象字面量。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var cat = {
+    //字符串字面量
+    name : &quot;cat&quot;,
+
+    //数组字面量
+    type : [&quot;波斯猫&quot;, &quot;加菲猫&quot;, &quot;垂耳猫&quot;],
+
+    //函数字面量
+    mark : function(){alert(this.name + this.type)},
+
+    //对象字面量
+    info : {from : &quot;usa&quot;, &quot;age&quot; : &quot;1&quot;}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;创建js对象&lt;/h3&gt;
+
+&lt;p&gt;js对象只是一组名称/值对，可以使用熟悉的“.”（点）运算符或“[]”运算符，来获得和设置对象的属性，像词典。&lt;/p&gt;
+
+&lt;p&gt;code1：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var userObject = new Object();
+userObject.lastLoginTime = new Date();
+alert(userObject.lastLoginTime); 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;code2：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var userObject = {}; // equivalent to new Object()
+userObject[&quot;lastLoginTime&quot;] = new Date();
+alert(userObject[&quot;lastLoginTime&quot;]);   
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;code3：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var userObject = { 
+    &quot;lastLoginTime&quot; : new Date() 
+};
+alert(userObject.lastLoginTime);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;创建js函数，函数也是对象&lt;/h3&gt;
+
+&lt;p&gt;code：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//1、普通函数
+function func(x) {
+    alert(x);
+}
+func(&quot;blah&quot;);
+
+//2、定义函数，在此创建函数对象，并赋给变量func
+var func = function(x) {
+    alert(x);
+};
+func(&quot;blah2&quot;);
+
+//3、用Funciton构造函数，不常用
+var func = new Function(&quot;x&quot;, &quot;alert(x);&quot;);
+func(&quot;blah3&quot;);  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;使用对象初始化器创建对象&lt;/h3&gt;
+
+&lt;p&gt;code1：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var myConstructor = function(){
+}
+
+//添加静态属性
+//name属性和alertName()方法作为静态成员添加到了对象实例中
+myConstructor.name = &quot;heiniu&quot;;
+myConstructor.alertName = function(){
+    alert(this.name);
+}
+//执行,不需要new
+myConstructor.alertName();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;code2：等价于以下代码，结构更简洁清晰。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//name属性和alertName()方法作为静态成员添加到了对象实例中
+var myConstructor = {
+    //静态属性
+    name : &quot;heiniu&quot;,
+
+    //静态方法
+    alertName : function(){
+        alert(this.name);
+    }
+}
+
+//执行,不需要new
+myConstructor.alertName();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;总结：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;优点：简洁明了；&lt;/li&gt;
+&lt;li&gt;缺点：创建对象的代码是一次性的&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;使用构造函数创建对象&lt;/h3&gt;
+
+&lt;p&gt;定义构造函数，而不是类&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//私有成员就是在构造函数中定义的变量和函数
+function myConstructor2(msg, name){
+
+    //公有属性
+    this.myMsg = msg;
+    this.name = name;
+
+    //私有属性
+    var myVersion = &quot;1.0&quot; 
+
+    //私有方法
+    function alertMsg(){
+        alert(this.myMsg)
+        alert(myVersion)
+    }
+    alertVersion();//实例化时显示信息
+
+    //特权方法，也是公用方法，在构造函数的作用域中使用this关键字定义的方法，尽量不要用，只用于需要访问私有成员的情况。
+    this.appendToMsg = fucntion(string){
+        this.myMsg += &quot;heiniu_&quot; + string;
+        alertMsg();
+    }
+
+}
+
+//静态属性和方法，静态成员是直接通过类对象访问的。
+myConstructor2.myYear = &quot;2012&quot;;
+myConstructor2.now = function(){
+    return new Date();
+}
+
+//公有方法，修改函数原型，即prototype属性。
+//一旦修改原型方法则立即应用到继承的对象和实例中，有风险。
+//原型方式会将新方法添加到myConstructor2的底层定义中，而不是myConstructor2实例自身。
+myConstructor2.prototype.alertMsg(){
+    alert(this.myMsg);
+}
+myConstructor2.prototype.alertName(){
+    alert(this.name);
+}
+
+var myObj = new myConstructor2(&quot;hello&quot;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;new操作符等价于&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//1、call()方法,每个函数对象都有一个名为 call 的方法，它将函数作为第一个参数的方法进行调用。第一个参数用作 this 的对象。其他参数都直接传递给函数自身。
+var myObj = {};
+myConstructor2.call(myObj,&quot;hello&quot;, &quot;heiniu&quot;)
+
+//2、apply()方法，有两个参数，用作 this 的对象和要传递给函数的参数的数组。
+var myObj = {};
+myConstructor2.apply(myObj,[&quot;hello&quot;, &quot;heiniu&quot;])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;call的工作机制：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var someuser = {
+    name : &quot;sjm&quot;,
+    display : function(words){
+        console.log(this.name + &#39; says &#39; + words);
+    }
+};
+
+var myself = {
+    name : &quot;heiniu&quot;
+};
+
+someuser.display.call(myself, &#39;fighting!&#39;);
+//结果：heiniu says fighting!
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;someuser.display是函数的引用，即被调用的函数。&lt;/li&gt;
+&lt;li&gt;myself是someuser.display被调用时的上下文对象。&lt;/li&gt;
+&lt;li&gt;&#39;fighting!&#39;是传入someuser.display的参数。&lt;/li&gt;
+&lt;li&gt;通过call将上下文对象改变为myself对象。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;&lt;strong&gt;总结：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;作为对象，函数还可以赋给变量、作为参数传递给其他函数、作为其他函数的值返回，并可以作为对象的属性或数组的元素进行存储等等。&lt;/p&gt;
+
+&lt;p&gt;call和apply的功能一致：以不同的对象作为上下文来调用某个函数，即允许一个对象去调用另一个对象的成员函数。&lt;/p&gt;
+
+&lt;p&gt;call和apply的差别：call以参数表来接受被调用函数的参数，而apply以数组来接受被调用函数的参数。&lt;/p&gt;
+
+&lt;p&gt;使用不同的引用来调用同一个函数时，this指针永远是这个引用所属的对象。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;优点：可创建出多个规划好的对象，有若干个固定的属性、方法，并能初始化实例化。&lt;/li&gt;
+&lt;li&gt;缺点：复杂些，有上下文对象（this指针），即被调用函数所处的环境。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;使用原型和构造函数共同生成对象&lt;/h3&gt;
+
+&lt;p&gt;什么是原型链？&lt;/p&gt;
+
+&lt;p&gt;继承方面,javascript中的每个对象都有一个内部私有的链接指向另一个对象 (或者为 null),这个对象就是原对象的原型. 这个原型也有自己的原型, 直到对象的原型为null为止. 这种一级一级的链结构就称为原型链.&lt;/p&gt;
+
+&lt;p&gt;prototype 对象的任何属性和方法都被传递给那个类的所有实例。原型链利用这种功能来实现继承机制。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;function ClassA() {
+}
+
+ClassA.prototype.color = &quot;blue&quot;;
+ClassA.prototype.sayColor = function () {
+    alert(this.color);
+};
+
+function ClassB() {
+}
+
+//继承和扩展
+ClassB.prototype = new ClassA();
+ClassB.prototype.name = &quot;&quot;;
+ClassB.prototype.sayName = function () {
+    alert(this.name);
+};
+
+//执行
+var objA = new ClassA();
+var objB = new ClassB();
+objA.color = &quot;blue&quot;;
+objB.color = &quot;red&quot;;
+objB.name = &quot;John&quot;;
+objA.sayColor();
+objB.sayColor();
+objB.sayName();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;使用原型与直接在构造函数内定义的属性 不同点：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;构造函数内定义的属性继承方式与原型不同，子对象需要显示调用父对象才能继承构造函数内定义的属性。&lt;/li&gt;
+&lt;li&gt;构造函数内定义的任何属性，包括函数在内都会被重复创建，同一个构造函数产生的两个对象不共享实例。&lt;/li&gt;
+&lt;li&gt;构造函数内定义的函数有运行时闭包的开销，因为构造函数内的局部变量对其中定义的函数来说是可见的。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;原型使用场合：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;除非必须用构造函数闭包，否则尽量用原型定义成员函数，可减少开销&lt;/li&gt;
+&lt;li&gt;尽量在构造函数内定义一般成员，尤其是对象或数组，因为用原型定义的成员是多个实例共享的。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;原型链机制：&lt;/h3&gt;
+
+&lt;p&gt;javascript分为三类对象：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;1、用户创建的对象&lt;/li&gt;
+&lt;li&gt;2、构造函数对象&lt;/li&gt;
+&lt;li&gt;3、原型对象&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;code：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;function Foo(){
+}
+var foo = new Foo();
+var obj = new Object();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;公有、私有、特权、静态总结&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;私有和特权成员在函数的内部，他们会被带到函数的每一个实例中生成新的副本，因而将占用大量的内存。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;公有的原型成员是对象的一部分，适用于通过new关键字实例化该对象的每一个实例。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;静态成员所关联的是类本身，而不同的是大多数方法和属性所关联的是类的实例。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;私有成员命名规范上用下划线表示，私有成员可避免安全隐患，防止使用者修改某个属性，导致对象内部数据的一致性受到破坏。如&lt;code&gt;_myPrivateProp&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;参考&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://msdn.microsoft.com/zh-cn/magazine/cc163419.aspx&quot;&gt;http://msdn.microsoft.com/zh-cn/magazine/cc163419.aspx&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.w3school.com.cn/js/pro_js_inheritance_implementing.asp&quot;&gt;http://www.w3school.com.cn/js/pro_js_inheritance_implementing.asp&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</content>
+   </entry>
    
    <entry>
      <title>深夜杂念：程序人生</title>
@@ -1222,50 +1689,6 @@ sudo gem sources -a http://ruby.taobao.org/
 &lt;h2&gt;结语&lt;/h2&gt;
 
 &lt;p&gt;如果你跟着这篇不那么详尽的教程，成功搭建了自己的博客，恭喜你！剩下的就是保持热情的去写自己的文章吧。&lt;/p&gt;
-</content>
-   </entry>
-   
-   <entry>
-     <title>关于我</title>
-     <link href="http://itweige.com/AboutMe"/>
-     <updated>2014-04-14T00:00:00+08:00</updated>
-     <id>http://itweige.com/AboutMe</id>
-     <content type="html">&lt;h2&gt;我是马斯特温德 : Masterwind&lt;/h2&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
-
-&lt;h3&gt;博客简介:&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&quot;/&quot;&gt;生活滴水&lt;/a&gt;&lt;/strong&gt;：汇聚生活思考点点滴滴。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&quot;/project&quot;&gt;技术击石&lt;/a&gt;&lt;/strong&gt;：滴水穿石，积累铸造成功。&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;人生就是一场旅行，不必在乎目的地，在乎的只是沿途的风景以及看风景的心情。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogImages/AboutMe.jpg&quot; alt=&quot;关于我&quot; /&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
-
-&lt;h3&gt;研究方向&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;web开发 / 系统架构设计 / Java相关 / 数据检索 / 流媒体 etc. 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;关于作者&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;  var ihubo = {
-    nickName  : &quot;伟哥&quot;,
-    site : &quot;http://itweige.com&quot;,
-    education:&#39;SDU(Bachelor)--&amp;gt;BUPT(Master)&#39;,
-    Email:zzzw1990@126.com
-  }
-&lt;/code&gt;&lt;/pre&gt;
 </content>
    </entry>
    
