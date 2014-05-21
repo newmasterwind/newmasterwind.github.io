@@ -4,7 +4,7 @@
    <title>疯子伟哥的世界</title>
    <link href="http://www.itweige.com/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://www.itweige.com" rel="alternate" type="text/html" />
-   <updated>2014-05-21T18:06:59+08:00</updated>
+   <updated>2014-05-21T23:37:11+08:00</updated>
    <id>http://www.itweige.com</id>
    <author>
      <name></name>
@@ -139,7 +139,7 @@ http.port=8888
 &lt;p&gt;&lt;strong&gt;注：本节内容从ningg大神那里学到的，这里只是引用，班门弄斧了！&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;搭建完成，此时就实现了一个基于RTMP协议和FLV格式视频文件的流媒体服务器搭建。&lt;br/&gt;
-上一个我们开发的一个项目视频播放展示图:&lt;br/&gt;
+上一个我们开发的项目视频播放展示图:&lt;br/&gt;
 &lt;img src=&quot;/images/projectImage/stream-server-show.png&quot; alt=&quot;展示图&quot; /&gt;&lt;br/&gt;
 更好的优化方案，有待继续深入研究～。～&lt;/p&gt;
 
