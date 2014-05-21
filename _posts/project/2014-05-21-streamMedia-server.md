@@ -5,11 +5,14 @@ description : 接上文的流媒体分析，本文带来一个简单的基于flv
 category : project
 ---
 
-> 在之前的一文中介绍了关于流媒体及flv的相关知识：[流媒体及FLV定点播放浅析](http://itweige.com/flv-stream-media/)，本文将手把手带来如何实现一个基于flv格式视频的流媒体服务器。
-
+　　在之前的一文中介绍了关于流媒体及flv的相关知识：**[流媒体及FLV定点播放浅析](http://itweige.com/flv-stream-media/)**，本文将手把手带来如何实现一个基于flv格式视频的流媒体服务器。  
+![](/images/projectImage/streamServer.jpg)
 ##FLV视频发布方式  
-<hr/>
-###HTTP和RTMP方式简介
+---  
+
+  
+###HTTP和RTMP方式简介  
+
 　　现在网络上的视频网站youtube，6rooms和56，发现他们用的播放协议也都是Http(**这个可以用chrome插件或者firebug观察到**)。按说FMS/Red5作为流媒体服务器，是专门做过优化的。但为何这些网站都没采用RTMP 的协议呢。RTMP 协议和Http比有哪些优势呢，或者说：我们为什么要使用FMS/Red5呢？  
 　　两种协议HTTP和RTMP ，有一些不同：
 
