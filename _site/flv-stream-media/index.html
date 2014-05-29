@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Masterwind
+    -->
+    <meta charset="utf-8" />
+    <title>流媒体及FLV定点播放浅析 | 疯子伟哥的世界</title>
+    <meta name="author" content="Masterwind" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Masterwind's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="/atom.xml" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">主页：Masterwind</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+        
+        <div class="home-contact">
+            <a href="http://weibo.com/u/1812397252" target="_blank" style="margin-left:-5px;"><img src="http://www.weibo.com/favicon.ico" alt="" width="25"/></a>    
+        </div>
+        
+      
+    </div>
+	<!--
+    <div class="github-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="https://github.com/newmasterwind/newmasterwind.github.io" target="_blank">Github Repository</a>
+        </div>
+    </div>
+	-->
+	<a class="v-fork-me" href="https://github.com/newmasterwind/newmasterwind.github.io" target="_blank" rel="nofollow">
+        <img src="/images/forkme-on-github.png" alt="Fork me on GitHub">
+    </a>
+	<div class="aboutme-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/AboutMe" target="_blank">About Me-></a>
+        </div>
+    </div>
+    <link rel="stylesheet" href="/js/prettify/prettify.css" />
+<style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/flv-stream-media" title="流媒体及FLV定点播放浅析">流媒体及FLV定点播放浅析</a></h1>
+        <p class="entry-date">2014-05-13</p>
+        <h2>1. 何谓流媒体</h2>
+
+<h4>1.1 流媒体概述</h4>
+
+<p>　　所谓流媒体是指采用流式传输的方式在Internet播放的媒体格式。 流媒体又叫流式媒体，它是指商家用一个视频传送服务器把节目当成数据包发出，传送到网络上。用户通过解压设备对这些数据进行解压后，节目就会像发送前那样显示出来。<br/>
+　　流媒体是指以流的方式在网络中传输音频、视频和多媒体文件的形式。 流媒体文件格式是支持采用流式传输及播放的媒体格式。流式传输方式是将视频和音频等多媒体文件经过特殊的压缩方式分成一个个压缩包，由服务器向用户计算机连续、实时传送。在采用流式传输方式的系统中，用户不必像非流式播放那样等到整个文件全部下载完毕后才能看到当中的内容，而是只需要经过几秒钟或几十秒的启动延时即可在用户计算机上利用相应的播放器对压缩的视频或音频等流式媒体文件进行播放，剩余的部分将继续进行下载，直至播放完毕。<br/>
+　　流式媒体在播放前并不下载整个文件，只将开始部分内容存入内存，流式媒体的数据流随时传送随时播放，只是在开始时有一些延迟。流媒体实现的关键技术就是流式传输。流式传输定义很广泛，现在主要指通过网络传送媒体（如视频、音频）的技术总称。其特定含义为通过Internet 将影视节目传送到PC机。实现流式传输有两种方法：实时流式传输（Real time streaming）和顺序流式传输（progressive streaming）。一般说来，如视频为实时广播，或使用流式传输媒体服务器，或应用如RTSP的实时协议，即为实时流式传输。如使用HTTP服务器，文件即通过顺序流发送。</p>
+
+<h4>1.2 流媒体技术</h4>
+
+<blockquote><p>所谓流媒体技术就是把连续的影像和声音信息经过压缩处理后放上网站服务器,让用户一边下载一边观看、收听，而不要等整个压缩文件下载到自己的计算机上才可以观看的网络传输技术。该技术先在使用者端的计算机上创建一个缓冲区，在播放前预先下一段数据作为缓冲，在网路实际连线速度小于播放所耗的速度时，播放程序就会取用一小段缓冲区内的数据，这样可以避免播放的中断，也使得播放品质得以保证。</p></blockquote>
+
+<h5>1.3 流媒体传输方式</h5>
+
+<p>　　流媒体传输技术又分两种，一种是顺序流式传输，另一种是实时流式传输。<strong>顺序流式传输与实时流式传输的区别</strong>:</p>
+
+<ul>
+<li><p>顺序流式传输是顺序下载，在下载文件的同时用户可观看在线媒体，在给定时刻，用户只能观看已下载的那部分，而不能跳到还未下载的前头部分，顺序流式传输不象实时流式传输在传输期间根据用户连接的速度做调整。由于标准的HTTP服务器可发送这种形式的文件，也不需要其他特殊协议，它经常被称作HTTP流式传输。顺序流式传输比较适合高质量的短片段，如片头、片尾和广告，由于该文件在播放前观看的部分是无损下载的，这种方法保证电影播放的最终质量。这意味着用户在观看前，必须经历延迟，对较慢的连接尤其如此。对通过调制解调器发布短片段，顺序流式传输显得很实用，它允许用比调制解调器更高的数据速率创建视频片段。尽管有延迟，毕竟可让你发布较高质量的视频片段。顺序流式文件是放在标准HTTP或FTP服务器上，易于管理，基本上与防火墙无关。顺序流式传输不适合长片段和有随机访问要求的视频，如：讲座、演说与演示。它也不支持现场广播，严格说来，它是一种点播技术。</p></li>
+<li><p>实时流式传输指保证媒体信号带宽与网络连接配匹，使媒体可被实时观看到。实时流与HTTP流式传输不同，他需要专用的流媒体服务器与传输协议。实时流式传输总是实时传送，特别适合现场事件，也支持随机访问，用户可快进或后退以观看前面或后面的内容。理论上，实时流一经播放就可不停止，但实际上，可能发生周期暂停。实时流式传输必须配匹连接带宽，这意味着在以调制解调器速度连接时图象质量较差。而且，由于出错丢失的信息被忽略掉，网络拥挤或出现问题时，视频质量很差。如欲保证视频质量，顺序流式传输也许更好。实时流式传输需要特定服务器，如：QuickTime Streaming Server、RealServer与Windows Media Server。这些服务器允许你对媒体发送进行更多级别的控制，因而系统设置、管理比标准HTTP服务器更复杂。实时流式传输还需要特殊网络协议，如：RTSP (Realtime Streaming Protocol)或MMS (Microsoft Media Server)。这些协议在有防火墙时有时会出现问题，导致用户不能看到一些地点的实时内容。</p></li>
+</ul>
+
+
+<h4>1.4 流媒体传输协议</h4>
+
+<p>　　流媒体的传输需要合适的传输协议，在internet上的文件传输大部分都是建立在tcp协议的基础上，也有一些是以ftp传输协议的方式进行传输，但采用这些传输协议都不能实现实时方式的传输。随着流媒体技术的深入研究，比较成熟的流媒体传输一般都是采用建立在udp协议上的rtp/rtsp实时传输协议。对于对传输质量要求不是很高，而对传输速度则有很高的要求的视音频流媒体文件来说，采用udp协议则更合适．下面，让我们来看一下现在使用的主要的流媒体协议：<br/>
+　　1. RTSP（Real Time Streaming Protocol），实时流媒体协议，它是由RealNetworks和Netscape共同提出的，现在用于RealNetworks的Real Media产品中；<br/>
+　　2. PNM（Progressive Networks Audio），这也是Real专用的实时传输协议，它一般采用UDP协议，并占用7070端口，但当你的服务器在防火墙内且7070端口被挡，且你的服务器把SmartingNetwork设为真时，则采用http协议，并占用默认的80端口；<br/>
+　　3. MMS（Microsoft Media Server protocol），这是微软的流媒体服务器协议，MMS 是连接 Windows Media 单播服务的默认方法。</p>
+
+<h4>1.5 流媒体包重组排序</h4>
+
+<p>　　因为internet是以包为单位进行异步传输的，因此多媒体数据在传输中要被分解成许多包，由于网络传输的不稳定性，各个包选择的路由不同，所以到达客户端的时间次序可能发生改变，甚至产生丢包的现象．为此，必须采用缓存技术来纠正由于数据到达次序发生改变而产生的混乱状况，利用缓存对到达的数据包进行正确排序，从而使视音频数据能连续正确地播放．缓存中存储的是某一段时间内的数据，数据在缓存中存放的时间是暂时的，缓存中的数据也是动态的，不断更新的．流媒体在播放时不断读取缓存中的数据进行播放，播放完后该数据便被立即清除，新的数据将存入到缓存中．因此，在播放流媒体文件时并不需占用太大的缓存空间．</p>
+
+<h2>2. 详解FLV格式</h2>
+
+<p>　　FLV 是FLASH VIDEO的简称，FLV流媒体格式是随着Flash MX的推出发展而来的视频格式。由于它形成的文件极小、加载速度极快，使得网络观看视频文件成为可能.当前主流的媒体网站像国内的优酷、国外youtube其标清格式的文件均采用flv的格式。它的出现有效地解决了视频文件导入Flash后，使导出的SWF文件体积庞大，不能在网络上很好的使用等缺点。<br/>
+　　FLV是一个二进制文件，其文件格式如下图 ，由文件头（FLV header）和很多tag组成。tag又可以分成三类：audio,video,script，分别代表音频流，视频流，脚本流（关键字或者文件信息之类）。<br/>
+  　　参考链接：  http://wuyuans.com/2012/08/flv-format/</p>
+
+<h4>2.1 FLV Header</h4>
+
+<p>　　FLV的Header信息一般比较简单，记录了flv的类型、版本等信息，是flv的开头，一般占9bytes。。如下图中解析：</p>
+
+<p> <img src="/images/projectImage/flv-flvHeader.jpeg" alt="flv header " /><br/>
+　　文件类型：3bytes 总是FLV（0x46 0x4C 0x56），否则就不是在ffmpeg中在没有指定文件格式的情况下，也是通过这个字段来探测文件是否属于FLV格式的。<br/>
+　　版本：1byte 一般是0x01，表示FLV version 1<br/>
+　　流信息：1byte 倒数第一bit是1表示有视频，倒数第三bit是1表示有音频，其他都应该是0（有些软件如flvtool2可能造成倒数第四bit是1，不过也没发现有什么不对）<br/>
+　　header长度：4bytes 整个文件头的长度，一般是9（3+1+1+4），当然头部字段也有可能包含其它信息这个时间其长度就不是9了。</p>
+
+<h4>2.2 FLV Body</h4>
+
+<p>　　body部分由一个个Tag组成，每个Tag的下面有一块4bytes的空间PreViousTagSize，用来记录这个tag的长度，这个后置用于逆向读取处理，他们的关系如下图：<br/>
+   <img src="/images/projectImage/flv-flvBody.jpeg" alt="flv header " /></p>
+
+<h5>2.2.1 Tag</h5>
+
+<p>　　每个Tag也是由两部分组成的：Tag Header和Tag Data。Tag Header里存放的是当前Tag的类型、数据区（Tag Data）长度等信息.</p>
+
+<h6>2.2.2 Tag Data</h6>
+
+<p>　　数据区根据Tag类型的不同可分为三种，音频数据、视频数据和脚本数据。</p>
+
+<h4>2.3 FLV视频发布方式</h4>
+
+<p>　　<strong>FLV视频有两种发布方式:HTTP方式和TRMP流媒体方式。</strong></p>
+
+<h5>2.3.1  HTTP方式</h5>
+
+<p>　　这种方式要下载FLV视频文件到本地播放，一旦FLV视频文件下载完成，就不会消耗服务器的资源和带宽，但是拖动功能没有RTMP/RTMP流媒体方式强大。</p>
+
+<h5>2.3.2  RTMP/RTMP流媒体方式</h5>
+
+<p>　　这种方式不用下载FLV视频文件到本地，可以实时的播放flv文件，可以任意拖拽播放进度条，但是比较消耗服务器的资源，</p>
+
+<h2>3.关于视频帧</h2>
+
+<p>　　我们都知道视频是由图片构成的，就像早期的胶片电影一样，一幅幅图片连续播放就形成了视频，在视频中我们管这些图片叫帧。在x264中有三种基本的帧类型：I帧、P帧和B帧.<br/>
+　　参考链接：http://blog.163.com/yan_ku@126/blog/static/122375126201210199813425/</p>
+
+<h4>3.1 I帧</h4>
+
+<p>　　I帧(I frame)，又称为内部画面(intra picture)，I帧通常是每个GOP(MPEG 所使用的一种视频压缩技术)的第一个帧，经过适度地压缩，做为随机访问的参考点，可以当成图象。在MPEG编码的过程中，部分视频帧序列压缩成为I帧；部分压缩成P帧；还有部分压缩成B帧。I帧法是帧内压缩法，也称为“关键帧”压缩法。————百度百科<br/>
+　　也就是说I帧其实是图片编码的，类似于JPEG编码，可以理解为电影中的胶片。而且I帧的生成是没有参考前后帧的，他只是作为参考点而存在，其他类型的帧都是以他为原型经过适当编码而来的。</p>
+
+<h4>3.2 P帧</h4>
+
+<p>　　前向预测编码帧 又称predictive-frame，P帧由在它前面的P帧或者I帧预测而来，它比较与它前面的P帧或者I帧之间的相同信息或数据，也即考虑运动的特性进行帧间压缩。P帧法是根据本帧与相邻的前一帧（I帧或P帧）的不同点来压缩本帧数据。采取P帧和I帧联合压缩的方法可达到更高的压缩且无明显的压缩痕迹。<br/>
+　　P帧是由前面的帧预测而来的，打个比方，I帧就是父母，P帧相当于孩子，孩子还可以再生孩子，一切的起源肯定是父母，也就是I帧。<br/>
+  <img src="/images/projectImage/flv-PFrame.png" alt="B Frame" /></p>
+
+<h4>3.3 B帧</h4>
+
+<p>　　双向预测内插编码帧 又称bi-directional interpolated prediction frame 。B帧法是双向预测的帧间压缩算法。当把一帧压缩成B帧时，它根据相邻的前一帧、本帧以及后一帧数据的不同点来压缩本帧，也即仅记录本帧与前后帧的差值。只有采用B帧压缩才能达到200：1的高压缩。一般地，I帧压缩效率最低，P帧较高，B帧最高。<br/>
+　　一般视频的帧率为23，有的甚至到了30，也就是说一秒钟有23帧的画面，除非那部电影的场面相当动作，不然帧与帧之间的差别会相当小。相比较P帧的前向预测，B帧的前后双向预测所计算出来的值会更小，所以他的体积比P帧小很多，压缩率也最高。</p>
+
+<h4>3.4 帧总结</h4>
+
+<p>　　最后来个总结，I帧是关键帧，是类似于图片形式的存在；P帧是前向预测帧，由前面的帧预测而来；B帧是前后向预测帧，由前一帧和后一帧预测而来。在视频编码中这三种帧都是很重要的，只有把这三种帧合理分配好才能很好的编码视频。如果I帧太多，视频清晰度会相当不错，但体积会比较大；太少也不行，I帧是参考帧，其他两种帧都是间接或直接参考I帧而来的，参考太少的话画面很容易走样，变得模糊。</p>
+
+<h2>4. 流媒体服务器</h2>
+
+<p>　　Red5是一个开源项目，用于实现flash与服务器端之间通过rtmp(real time messaging protocal)协议通信，可以实现视频、音频的传输，remote shared object等等。相对于FMS, Red5是免费、开源的。它是一个采用Java开发开源的Flash流媒体服务器。它支持：把音频（MP3）和视频（FLV）转换成播放流； 录制客户端播放流（只支持FLV）；共享对象；现场直播流发布；远程调用。</p>
+
+<h2>5. 流媒体如何实现拖动和定点播放？</h2>
+
+<p>　　视频上传到服务器完成后，在服务端需要做文件格式转换，因为客户上传的视频是各种格式的，都需要转换为flv。利用ffmpeg这个开源免费的库可以完成这个步骤，如</p>
+
+<blockquote><p>ffmpeg -i [customer.mpeg] -acodec mp3 -ar 22050 -ab 32 -f flv -s 320×240 [result.flv]</p></blockquote>
+
+<p>转换后的flv还不能直接用，如果不加入合适的metadata，flv在播放的时候将不能拖动。利用工具给flv文件注入metadata：利用flvtool2这个开源免费的库可以完成这个步骤，如</p>
+
+<blockquote><p>flvtool2 -U [result.flv]</p></blockquote>
+
+<p>这样，包含duration，frames等信息的metadata将被注入到flv中。对视频中某一帧做截屏来生成缩略图：利用ffmpeg可以完成这个需求，它可以从视频中取出某一帧来保存为图片，如：</p>
+
+<blockquote><p>ffmpeg -y -i [result.flv] -vframes 1 -ss 00:00:01 -an -vcodec png -f rawvideo -s 320×240 [thumbnailimage.png]</p></blockquote>
+
+<p>　　其中，关于“拖动”，由于整个系统是基于网络的，客户端在拖动之后，必须重新向服务器端发送请求，服务器根据客户端的拖动请求，寻找最接近的拖动点，返回可以播放的数据流，从而完成点播拖动。<br/>
+  <img src="/images/projectImage/flv-server.png" alt="server" /></p>
+
+<h4>5.1 服务器端</h4>
+
+<p>　　首先，解析flv文件，生成flv视频关键帧列表（这个关键帧列表初始存在于flv文件的metadata中，可以在第一次解析时提取出来保存在外部文件中）表明时间和便宜量的对应关系。然后，当接收到客户端发来的数据请求时，根据客户端拖动的时间点的请求，找出时间距离最近的关键帧，根据偏移量，读取flv的文件数据，然后拼接flv的9字节文件头部（还需要再加上4个字节全零的pre tag size，共13字节），返回。其中关键帧列表可以单独存储在一个外部文件中，通过“视频对象.keyframes.filepositions”属性获取FLV关键帧列表并赋予一个数组，以备拖动定位时调用。</p>
+
+<h4>5.2 客户端</h4>
+
+<p>　　客户端需要特别注意的，除了正确的解析视频流并播放，还需要小心时间轴的行进，因为用户拖动的时间位置并不一定是关键帧，所以，需要根据服务器返回的关键帧的真实时间，重新定位播放进度。</p>
+
+		<div id="disqus_container">
+            <div style="margin-bottom:20px" class="right">
+                <script type="text/javascript" charset="utf-8">
+                (function(){
+                  var _w = 86 , _h = 16;
+                  var param = {
+               
+                    type:'6',
+                    count:'', /**是否显示分享数，1显示(可选)*/
+                    appkey:'', /**您申请的应用appkey,显示分享来源(可选)*/
+                    title:'', /**分享的文字内容(可选，默认为所在页面的title)*/
+                    pic:'', /**分享图片的路径(可选)*/
+                    ralateUid:'1812397252', /**关联用户的UID，分享微博会@该用户(可选)*/
+                    language:'zh_cn', /**设置语言，zh_cn|zh_tw(可选)*/
+                    rnd:new Date().valueOf()
+                  }
+                  var temp = [];
+                  for( var p in param ){
+                    temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
+                  }
+                  document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://hits.sinajs.cn/A1/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
+                })()
+                </script>
+            </div>
+            <a href="#" class="comment" onclick="return false;">点击查看评论</a>
+            <div id="disqus_thread"></div>
+        </div>	
+
+    </div>
+
+
+    <div class="sidenav">
+    	<span class="sideNavTitle">全站导航</span>
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+            <li><a href="/programmer-thoughts">深夜杂念：程序人生</a></li>
+        
+            <li><a href="/GoodSongs">伤心情歌--杨宗纬</a></li>
+        
+            <li><a href="/raining">听雨</a></li>
+        
+        </ul>
+
+	<hr/>
+        <h2>Project</h2>
+        <ul class="artical-list">
+        
+            <li><a href="/streamMedia-server">如何快速搭建流媒体服务器</a></li>
+        
+            <li><a href="/Nodejs-rookie">初探Nodejs</a></li>
+        
+            <li><a href="/javascript-oop">javascript面向对象编程浅析</a></li>
+        
+            <li><a href="/Java-Thread">伟哥教你破解--Java线程谜团</a></li>
+        
+            <li><a href="/flv-stream-media">流媒体及FLV定点播放浅析</a></li>
+        
+            <li><a href="/ServerPush">服务器Push技术--总结</a></li>
+        
+        </ul>
+		
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+
+                if($('.home-contact').is(':visible')){
+                    $('.home-contact').slideUp(100);
+                }else{
+                    $('.home-contact').slideDown(100);
+                }
+            });
+        })
+    </script>
+</body>
+</html>
