@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Masterwind
+    -->
+    <meta charset="utf-8" />
+    <title>逐个击破之--Java NIO | 疯子伟哥的世界</title>
+    <meta name="author" content="Masterwind" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Masterwind's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="/atom.xml" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">主页：Masterwind</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+        
+        <div class="home-contact">
+            <a href="http://weibo.com/u/1812397252" target="_blank" style="margin-left:-5px;"><img src="http://www.weibo.com/favicon.ico" alt="" width="25"/></a>    
+        </div>
+        
+      
+    </div>
+	<!--
+    <div class="github-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="https://github.com/newmasterwind/newmasterwind.github.io" target="_blank">Github Repository</a>
+        </div>
+    </div>
+	-->
+	<a class="v-fork-me" href="https://github.com/newmasterwind/newmasterwind.github.io" target="_blank" rel="nofollow">
+        <img src="/images/forkme-on-github.png" alt="Fork me on GitHub">
+    </a>
+	<div class="aboutme-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/AboutMe" target="_blank">About Me-></a>
+        </div>
+    </div>
+    <link rel="stylesheet" href="/js/prettify/prettify.css" />
+<style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/Java-Nio" title="逐个击破之--Java NIO">逐个击破之--Java NIO</a></h1>
+        <p class="entry-date">2014-06-09</p>
+        <h2>背景</h2>
+
+<p>　　</p>
+
+<blockquote><p>Java 标准 IO 类库是 io 面向对象的一种抽象。基于本地方法的底层实现，我们无须关注底层实现。
+InputStream\OutputStream( 字节流 ) ：一次传送一个字节。 Reader\Writer( 字符流 )
+：一次一个字符。</p></blockquote>
+
+<h2>1.NIO介绍</h2>
+
+<p>　　</p>
+
+<p>　　Java NIO(New IO)是一个可以替代标准Java IO API的IO API（从Java 1.4开始)，Java NIO提供了与标准IO不同的IO工作方式。<br/>
+　　NIO包（java.nio.*）引入了四个关键的抽象数据类型，它们共同解决传统的I/O类中的一些问题:</p>
+
+<ul>
+<li><strong>Buffer</strong>：它是包含数据且用于读写的线形表结构，其中还提供了一个特殊类用于内存映射文件的I/O操作。数据的读写只能从buffer开始，并止于buffer。</li>
+<li><strong>Charset</strong>：它提供Unicode字符串影射到字节序列以及逆影射的操作。</li>
+<li><strong>Channels</strong>：包含socket，file和pipe三种管道，它实际上是双向交流的通道。 标准的IO基于字节流和字符流进行操作的，而NIO是基于通道（Channel）和缓冲区（Buffer）进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。</li>
+<li><strong>Selector</strong>：它将多元异步I/O操作集中到一个或多个线程中。Java NIO引入了选择器的概念，选择器用于监听多个通道的事件（比如：连接打开，数据到达）。因此，单个的线程可以监听多个数据通道。</li>
+</ul>
+
+
+<h3>1.1 剖析BUffer</h3>
+
+<p>　　以下是Java NIO里关键的Buffer实现,这些Buffer覆盖了你能通过IO发送的基本数据类型：byte, short, int, long, float, double 和 char：</p>
+
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>DoubleBuffer</li>
+<li>FloatBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>ShortBuffer</li>
+</ul>
+
+
+<p>　　Java NIO中的Buffer用于和NIO通道channel进行交互，数据是从通道读入缓冲区，从缓冲区写入到通道中的。这是NIO与IO的一个重要区别：在面向流的I/O中您将数据直接写入或者将数据直接读到stream中，而在NIO中数据只能先读到或写入buffer中才能进行后续操作，buffer类似于一个中转站。<strong>简单的说Buffer是：一块连续的内存块，是NIO数据读或写的中转地。</strong><br/>
+　　缓冲Buffer区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。使用Buffer读写数据一般遵循以下四个步骤：</p>
+
+<ul>
+<li>写入数据到Buffer</li>
+<li>调用flip()方法</li>
+<li>从Buffer中读取数据</li>
+<li>调用clear()方法或者compact()方法</li>
+</ul>
+
+
+<p>　　一个 buffer 主要由 position、limit、capacity 三个变量来控制读写的过程。这三个变量在读和写时分别代表的含义如下：<br/>
+　　<img src="/images/projectImage/NIO-buffer-grid.png" alt="" /></p>
+
+<p>　　当向buffer写入数据时，buffer会记录下写了多少数据。一旦要读取数据，需要通过flip()方法将Buffer从写模式切换到读模式。在读模式下，可以读取之前写入到buffer的所有数据。一旦读完了所有的数据，就需要清空缓冲区，让它可以再次被写入。有两种方式能清空缓冲区：调用clear()或compact()方法。clear()方法会清空整个缓冲区。compact()方法只会清除已经读过的数据。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。示例程序：</p>
+
+<pre><code>RandomAccessFile aFile = new RandomAccessFile("data/nio-data.txt", "rw");
+FileChannel inChannel = aFile.getChannel();
+
+//create buffer with capacity of 48 bytes
+ByteBuffer buf = ByteBuffer.allocate(48);
+
+int bytesRead = inChannel.read(buf); //read into buffer.
+while (bytesRead != -1) {
+
+  buf.flip();  //make buffer ready for read
+
+  while(buf.hasRemaining()){
+      System.out.print((char) buf.get()); // read 1 byte at a time
+  }
+
+  buf.clear(); //make buffer ready for writing
+  bytesRead = inChannel.read(buf);
+}
+aFile.close();
+</code></pre>
+
+<h3>1.2 剖析Channel</h3>
+
+<p>　　Channel 是一个对象，可以通过它读取和写入数据。拿 NIO 与原来的 I/O 做个比较，通道就像是流。
+正如前面提到的，所有数据都通过 Buffer 对象来处理。您永远不会将字节直接写入通道中，相反，您是将数据写入包含一个或者多个字节的缓冲区。同样，您不会直接从通道中读取字节，而是将数据从通道读入缓冲区，再从缓冲区获取这个字节。<br/>
+　　简单的说Channel是：数据的源头或者数据的目的地，用于向buffer提供数据或者读取buffer数据，并且对I/O提供异步支持。<br/>
+　　这些是Java NIO中最重要的通道的实现：</p>
+
+<ul>
+<li>FileChannel</li>
+<li>DatagramChannel</li>
+<li>SocketChannel</li>
+<li>ServerSocketChannel</li>
+</ul>
+
+
+<p>　　在Channel接口中共定义了两个方法：</p>
+
+<pre><code>public boolean isOpen();   //Tells whether or not this channel is open  
+public void close() throws IOException();     //Close this channel  
+</code></pre>
+
+<p>　　FileChannel : 使用以下三个方法可以得到一个FileChannel的实例:</p>
+
+<pre><code>FileInputStream.getChannel()  
+FileOutputStream.getChannel()  
+RandomAccessFile.getChannel()  
+</code></pre>
+
+<p>　　上面提到Channel是数据的源头或者数据的目的地，用于向bufer提供数据或者从buffer读取数据。那么在实现了该接口的子类中应该有相应的read和write方法。在FileChannel中有以下方法可以使用：</p>
+
+<pre><code>public long read(ByteBuffer[] dsts)//Reads a sequence of bytes from this channel into the given buffers.  
+public long write(ByteBuffer[] srcs)//Writes a sequence of bytes to this channel from the given buffers.  
+</code></pre>
+
+<p>　　例子代码,下面是一个使用FileChannel读取数据到Buffer中的示例：</p>
+
+<pre><code>RandomAccessFile aFile = new RandomAccessFile("data/nio-data.txt", "rw");
+FileChannel inChannel = aFile.getChannel();
+
+ByteBuffer buf = ByteBuffer.allocate(48);
+
+int bytesRead = inChannel.read(buf);
+while (bytesRead != -1) {
+
+System.out.println("Read " + bytesRead);
+buf.flip();
+
+while(buf.hasRemaining()){
+System.out.print((char) buf.get());
+}
+
+buf.clear();
+bytesRead = inChannel.read(buf);
+}
+aFile.close(); 
+</code></pre>
+
+<h3>1.3剖析Selector</h3>
+
+<p>　　原始的IO方式处理请求的操作是1v1，每一个请求服务器都会分配一个线程进行操作处理响应，在数据流量很低的情况下，长时间处于等待状态，严重浪费了系统性能。<br/>
+　　Selector允许单线程处理多个 Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便。例如，在一个聊天服务器中。这是在一个单线程中使用一个Selector处理3个Channel的图示：<br/>
+<img src="/images/projectImage/NIO-selector.png" alt="" /></p>
+
+<p>　　要使用Selector，得向Selector注册Channel，然后调用它的select()方法。这个方法会一直阻塞到某个注册的通道有事件就绪。一旦这个方法返回，线程就可以处理这些事件，事件的例子有如新连接进来，数据接收等。</p>
+
+<p>　　通过调用Selector.open()方法创建一个Selector，如下：</p>
+
+<pre><code>Selector selector = Selector.open();
+</code></pre>
+
+<p>　　为了将Channel和Selector配合使用，必须将channel注册到selector上。通过SelectableChannel.register()方法来实现，如下：</p>
+
+<pre><code>channel.configureBlocking(false);
+SelectionKey key = channel.register(selector,Selectionkey.OP_READ);
+</code></pre>
+
+<p>　　与Selector一起使用时，Channel必须处于非阻塞模式下。这意味着不能将FileChannel与Selector一起使用，因为FileChannel不能切换到非阻塞模式。而套接字通道都可以。注意register()方法的第二个参数。这是一个“interest集合”，意思是在通过Selector监听Channel时对什么事件感兴趣。可以监听四种不同类型的事件：</p>
+
+<ul>
+<li>Connect</li>
+<li>Accept</li>
+<li>Read</li>
+<li>Write</li>
+</ul>
+
+
+<p>　　如果你对不止一种事件感兴趣，那么可以用“位或”操作符将常量连接起来，如下：</p>
+
+<pre><code>int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+</code></pre>
+
+<p>　　一旦向Selector注册了一或多个通道，就可以调用几个重载的select()方法。这些方法返回你所感兴趣的事件（如连接、接受、读或写）已经准备就绪的那些通道。换句话说，如果你对“读就绪”的通道感兴趣，select()方法会返回读事件已经就绪的那些通道。<br/>
+　　当向Selector注册Channel时，Channel.register()方法会返回一个SelectionKey 对象，这个对象代表了注册到该Selector的通道，可以通过SelectionKey的selectedKeySet()方法访问这些对象，然后遍历这个已选择的键集合来访问就绪的通道。如下：</p>
+
+<pre><code>Set selectedKeys = selector.selectedKeys();
+Iterator keyIterator = selectedKeys.iterator();
+while(keyIterator.hasNext()) {
+    SelectionKey key = keyIterator.next();
+    if(key.isAcceptable()) {
+        // a connection was accepted by a ServerSocketChannel.
+    } else if (key.isConnectable()) {
+        // a connection was established with a remote server.
+    } else if (key.isReadable()) {
+        // a channel is ready for reading
+    } else if (key.isWritable()) {
+        // a channel is ready for writing
+    }
+    keyIterator.remove();
+}
+</code></pre>
+
+<h2>2 Java Nio与Io的比较</h2>
+
+<h2>3 使用场合的选择</h2>
+
+<h2>4 完整的示例</h2>
+
+		<div id="disqus_container">
+            <div style="margin-bottom:20px" class="right">
+                <script type="text/javascript" charset="utf-8">
+                (function(){
+                  var _w = 86 , _h = 16;
+                  var param = {
+               
+                    type:'6',
+                    count:'', /**是否显示分享数，1显示(可选)*/
+                    appkey:'', /**您申请的应用appkey,显示分享来源(可选)*/
+                    title:'', /**分享的文字内容(可选，默认为所在页面的title)*/
+                    pic:'', /**分享图片的路径(可选)*/
+                    ralateUid:'1812397252', /**关联用户的UID，分享微博会@该用户(可选)*/
+                    language:'zh_cn', /**设置语言，zh_cn|zh_tw(可选)*/
+                    rnd:new Date().valueOf()
+                  }
+                  var temp = [];
+                  for( var p in param ){
+                    temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
+                  }
+                  document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://hits.sinajs.cn/A1/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
+                })()
+                </script>
+            </div>
+            <a href="#" class="comment" onclick="return false;">点击查看评论</a>
+            <div id="disqus_thread"></div>
+        </div>	
+
+    </div>
+
+
+    <div class="sidenav">
+    	<span class="sideNavTitle">全站导航</span>
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+            <li><a href="/programmer-thoughts">深夜杂念：程序人生</a></li>
+        
+            <li><a href="/GoodSongs">伤心情歌--杨宗纬</a></li>
+        
+            <li><a href="/raining">听雨</a></li>
+        
+        </ul>
+
+	<hr/>
+        <h2>Project</h2>
+        <ul class="artical-list">
+        
+            <li><a href="/Java-Nio">逐个击破之--Java NIO</a></li>
+        
+            <li><a href="/Java-Concurrent">逐个击破之--Java Concurrent包</a></li>
+        
+            <li><a href="/streamMedia-server">如何快速搭建流媒体服务器</a></li>
+        
+            <li><a href="/Nodejs-rookie">初探Nodejs</a></li>
+        
+            <li><a href="/javascript-oop">javascript面向对象编程浅析</a></li>
+        
+            <li><a href="/Java-Thread">伟哥教你破解--Java线程谜团</a></li>
+        
+            <li><a href="/flv-stream-media">流媒体及FLV定点播放浅析</a></li>
+        
+            <li><a href="/ServerPush">服务器Push技术--总结</a></li>
+        
+        </ul>
+		
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+
+                if($('.home-contact').is(':visible')){
+                    $('.home-contact').slideUp(100);
+                }else{
+                    $('.home-contact').slideDown(100);
+                }
+            });
+        })
+    </script>
+</body>
+</html>
