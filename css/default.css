@@ -107,7 +107,7 @@ pre ol{margin-left:25px;list-style-type:decimal;}
 .index-content .artical-cate li a,
 .index-content .artical-cate li a:visited { display:inline-block; zoom:1; color:#000; width:100%; }
 .index-content .artical-cate li a:hover { text-decoration:none; }
-.index-content .artical-cate li.on span{ color:red; }
+.index-content .artical-cate li.on span{ color:white; }
 .index-content .artical-cate li span{ font-size:20px;font-weight: bold;font-family: Times, Arial, Helvetica, sans-serif; }
 .index-content .cate-bar { height:3px; width:70%; margin:0 auto;margin-bottom:100px; }
 .index-content #cateBar { display:inline-block; zoom:1; height:3px; background:red; position:relative; width:0; }
