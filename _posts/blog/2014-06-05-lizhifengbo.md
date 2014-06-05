@@ -2,7 +2,7 @@
 layout: post
 title: 离职风波
 description: 谈一下最近从外企到互联网的离职经历，磨练的过程。
-category: blog
+category: /blog
 ---
 
 ###跳槽回忆录：Oracle-->网易  
