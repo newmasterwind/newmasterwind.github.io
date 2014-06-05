@@ -56,6 +56,11 @@
         <ul class="artical-list">
         
             <li>
+               <h2><b>>&nbsp;</b><a href="/lizhifengbo">离职风波</a></h2>
+                <div class="title-desc"><b>2014-06-05</b>:&nbsp;谈一下最近从外企到互联网的离职经历，磨练的过程。</div>
+            </li>
+        
+            <li>
                <h2><b>>&nbsp;</b><a href="/programmer-thoughts">深夜杂念：程序人生</a></h2>
                 <div class="title-desc"><b>2014-05-17</b>:&nbsp;夜深人静，思绪静下来，总结一下今天的程序人生见闻和思考。</div>
             </li>
@@ -71,6 +76,7 @@
             </li>
         
         </ul>
+
     </div>
     <div class="aside">
     </div>
@@ -135,5 +141,32 @@
             });
         })
     </script>
+
+<a id="base_scrollToTop" class="W_gotop" style="visibility: visible;">
+<span>
+ <em class="W_ico icon_gotop"></em>
+ <em class="W_txt">顶部</em>
+</span>
+</a>
+
+<script type="text/javascript">
+$(function(){
+ var gotop = $(".W_gotop")
+ gotop.click(function(){
+  $("html,body").animate({scrollTop:0},500)
+ });
+ 
+ $(window).scroll(function(){
+　　if($.browser.msie && ($.browser.version == "6.0") && !$.support.style){//如果IE6
+　　 gotop.css({"top":($(window).scrollTop()+$(window).height()-100)+"px","position":"absolute"});
+　　}
+　　if($(window).scrollTop()<=50){
+　　 gotop.fadeOut();
+　　}else{
+　　 gotop.fadeIn();
+　　}
+　});
+}); 
+</script>
 </body>
 </html>

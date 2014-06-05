@@ -2,7 +2,8 @@ auto: true
 
 markdown: rdiscount
 highlighter: pygments
-paginate: 10
+paginate: 5
+paginate_path: "project/page:num"
 permalink: /:title
 
 title: 疯子伟哥的世界

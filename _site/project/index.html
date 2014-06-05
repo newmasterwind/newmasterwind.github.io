@@ -113,10 +113,10 @@
         
         </ul>
     </div>
+	
     <div class="aside">
     </div>
 </div>
-
 
 
 <script type="text/javascript">
@@ -176,5 +176,32 @@
             });
         })
     </script>
+
+<a id="base_scrollToTop" class="W_gotop" style="visibility: visible;">
+<span>
+ <em class="W_ico icon_gotop"></em>
+ <em class="W_txt">顶部</em>
+</span>
+</a>
+
+<script type="text/javascript">
+$(function(){
+ var gotop = $(".W_gotop")
+ gotop.click(function(){
+  $("html,body").animate({scrollTop:0},500)
+ });
+ 
+ $(window).scroll(function(){
+　　if($.browser.msie && ($.browser.version == "6.0") && !$.support.style){//如果IE6
+　　 gotop.css({"top":($(window).scrollTop()+$(window).height()-100)+"px","position":"absolute"});
+　　}
+　　if($(window).scrollTop()<=50){
+　　 gotop.fadeOut();
+　　}else{
+　　 gotop.fadeIn();
+　　}
+　});
+}); 
+</script>
 </body>
 </html>

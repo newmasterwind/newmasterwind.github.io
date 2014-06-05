@@ -4,7 +4,7 @@
    <title>疯子伟哥的世界</title>
    <link href="http://www.itweige.com/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://www.itweige.com" rel="alternate" type="text/html" />
-   <updated>2014-06-02T23:18:54+08:00</updated>
+   <updated>2014-06-05T17:46:10+08:00</updated>
    <id>http://www.itweige.com</id>
    <author>
      <name></name>
@@ -19,15 +19,11 @@
      <id>http://itweige.com/Java-Nio</id>
      <content type="html">&lt;h2&gt;背景&lt;/h2&gt;
 
-&lt;p&gt;　　&lt;/p&gt;
-
 &lt;blockquote&gt;&lt;p&gt;Java 标准 IO 类库是 io 面向对象的一种抽象。基于本地方法的底层实现，我们无须关注底层实现。
 InputStream\OutputStream( 字节流 ) ：一次传送一个字节。 Reader\Writer( 字符流 )
 ：一次一个字符。&lt;/p&gt;&lt;/blockquote&gt;
 
 &lt;h2&gt;1.NIO介绍&lt;/h2&gt;
-
-&lt;p&gt;　　&lt;/p&gt;
 
 &lt;p&gt;　　Java NIO(New IO)是一个可以替代标准Java IO API的IO API（从Java 1.4开始)，Java NIO提供了与标准IO不同的IO工作方式。&lt;br/&gt;
 　　NIO包（java.nio.*）引入了四个关键的抽象数据类型，它们共同解决传统的I/O类中的一些问题:&lt;/p&gt;
@@ -40,7 +36,7 @@ InputStream\OutputStream( 字节流 ) ：一次传送一个字节。 Reader\Writ
 &lt;/ul&gt;
 
 
-&lt;h3&gt;1.1 剖析BUffer&lt;/h3&gt;
+&lt;h3&gt;1.1 剖析Buffer&lt;/h3&gt;
 
 &lt;p&gt;　　以下是Java NIO里关键的Buffer实现,这些Buffer覆盖了你能通过IO发送的基本数据类型：byte, short, int, long, float, double 和 char：&lt;/p&gt;
 
@@ -149,7 +145,7 @@ bytesRead = inChannel.read(buf);
 aFile.close(); 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3&gt;1.3剖析Selector&lt;/h3&gt;
+&lt;h3&gt;1.3 剖析Selector&lt;/h3&gt;
 
 &lt;p&gt;　　原始的IO方式处理请求的操作是1v1，每一个请求服务器都会分配一个线程进行操作处理响应，在数据流量很低的情况下，长时间处于等待状态，严重浪费了系统性能。&lt;br/&gt;
 　　Selector允许单线程处理多个 Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便。例如，在一个聊天服务器中。这是在一个单线程中使用一个Selector处理3个Channel的图示：&lt;br/&gt;
@@ -203,11 +199,306 @@ while(keyIterator.hasNext()) {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2&gt;2 Java Nio与Io的比较&lt;/h2&gt;
+&lt;h2&gt;2 Java NIO与IO的比较&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;面向流与面向缓冲&lt;/strong&gt;&lt;br/&gt;
+　　Java NIO和IO之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的。 Java IO面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它缓存到一个缓冲区。 Java NIO的缓冲导向方法略有不同。数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查是否该缓冲区中包含所有您需要处理的数据。而且，需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;阻塞与非阻塞IO&lt;/strong&gt;&lt;br/&gt;
+　　Java IO的各种流是阻塞的。这意味着，当一个线程调用read() 或 write()时，该线程被阻塞，直到有一些数据被读取，或数据完全写入。该线程在此期间不能再干任何事情了。 Java NIO的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取。而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。 非阻塞写也是如此。一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。 线程通常将非阻塞IO的空闲时间用于在其它通道上执行IO操作，所以一个单独的线程现在可以管理多个输入和输出通道（channel）。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;选择器（Selectors）&lt;/strong&gt;&lt;br/&gt;
+　　Java NIO的选择器允许一个单独的线程来监视多个输入通道，你可以注册多个通道使用一个选择器，然后使用一个单独的线程来“选择”通道：这些通道里已经有可以处理的输入，或者选择已准备写入的通道。这种选择机制，使得一个单独的线程很容易来管理多个通道。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
 
 &lt;h2&gt;3 使用场合的选择&lt;/h2&gt;
 
-&lt;h2&gt;4 完整的示例&lt;/h2&gt;
+&lt;p&gt;　　NIO可让您只使用一个（或几个）单线程管理多个通道（网络连接或文件），但付出的代价是解析数据可能会比从一个阻塞流中读取数据更复杂。&lt;/p&gt;
+
+&lt;h3&gt;3.1 何时选择NIO&lt;/h3&gt;
+
+&lt;p&gt;　　如果需要管理同时打开的成千上万个连接，这些连接每次只是发送少量的数据，例如聊天服务器，实现NIO的服务器可能是一个优势。同样，如果你需要维持许多打开的连接到其他计算机上，如P2P网络中，使用一个单独的线程来管理你所有出站连接，可能是一个优势。&lt;/p&gt;
+
+&lt;h3&gt;3.2 何时选择IO&lt;/h3&gt;
+
+&lt;p&gt;　　如果你有少量的连接使用非常高的带宽，一次发送大量的数据，也许典型的IO服务器实现可能非常契合，而NIO则不太合适。&lt;/p&gt;
+
+&lt;h2&gt;4 完整的NIO示例&lt;/h2&gt;
+
+&lt;h3&gt;4.1 server端&lt;/h3&gt;
+
+&lt;p&gt;通过一个HandleClient来获取文件的一块数据，每一个客户都会分配一个HandleClient的实例。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        package nio.file;
+
+        import java.io.FileInputStream;
+        import java.io.IOException;
+        import java.net.InetSocketAddress;
+        import java.nio.ByteBuffer;
+        import java.nio.CharBuffer;
+        import java.nio.channels.FileChannel;
+        import java.nio.channels.SelectionKey;
+        import java.nio.channels.Selector;
+        import java.nio.channels.ServerSocketChannel;
+        import java.nio.channels.SocketChannel;
+        import java.nio.charset.Charset;
+        import java.nio.charset.CharsetDecoder;
+        import java.util.Iterator;
+
+        /**
+         * 测试文件下载的NIOServer
+         * 
+         * @author tenyears.cn
+         */
+public class NIOServer {
+          static int BLOCK = 4096;
+          // 处理与客户端的交互
+          public class HandleClient {
+            protected FileChannel channel;
+            protected ByteBuffer buffer;
+            public HandleClient() throws IOException {
+              this.channel = new FileInputStream(filename).getChannel();
+              this.buffer = ByteBuffer.allocate(BLOCK);
+            }
+            public ByteBuffer readBlock() {
+              try {
+                buffer.clear();
+                int count = channel.read(buffer);
+                buffer.flip();
+                if (count &amp;lt;= 0)
+                  return null;
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+              return buffer;
+            }
+            public void close() {
+              try {
+                channel.close();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+
+          protected Selector selector;
+          protected String filename = &quot;d://bigfile.dat&quot;; // a big file
+          protected ByteBuffer clientBuffer = ByteBuffer.allocate(BLOCK);
+          protected CharsetDecoder decoder;
+
+          public NIOServer(int port) throws IOException {
+            selector = this.getSelector(port);
+            Charset charset = Charset.forName(&quot;GB2312&quot;);
+            decoder = charset.newDecoder();
+          }
+
+          // 获取Selector
+          protected Selector getSelector(int port) throws IOException {
+            ServerSocketChannel server = ServerSocketChannel.open();
+            Selector sel = Selector.open();
+            server.socket().bind(new InetSocketAddress(port));
+            server.configureBlocking(false);
+            server.register(sel, SelectionKey.OP_ACCEPT);
+            return sel;
+          }
+
+          // 监听端口
+          public void listen() {
+            try {
+              for (;;) {
+                selector.select();
+                Iterator&amp;lt;&amp;lt;span style=&quot;background-color: rgb(255, 255, 255); &quot;&amp;gt;SelectionKey&amp;lt;/span&amp;gt;&amp;gt; iter = selector.selectedKeys()
+                    .iterator();
+                while (iter.hasNext()) {
+                  SelectionKey key = iter.next();
+                  iter.remove();
+                  handleKey(key);
+                }
+              }
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+
+          // 处理事件
+          protected void handleKey(SelectionKey key) throws IOException {
+            if (key.isAcceptable()) { // 接收请求
+              ServerSocketChannel server = (ServerSocketChannel) key.channel();
+              SocketChannel channel = server.accept();
+              channel.configureBlocking(false);
+              channel.register(selector, SelectionKey.OP_READ);
+            } else if (key.isReadable()) { // 读信息
+              SocketChannel channel = (SocketChannel) key.channel();
+              int count = channel.read(clientBuffer);
+              if (count &amp;gt; 0) {
+                clientBuffer.flip();
+                CharBuffer charBuffer = decoder.decode(clientBuffer);
+                System.out.println(&quot;Client &amp;gt;&amp;gt;&quot; + charBuffer.toString());
+                SelectionKey wKey = channel.register(selector,
+                    SelectionKey.OP_WRITE);
+                wKey.attach(new HandleClient());
+              } else
+                channel.close();
+              clientBuffer.clear();
+            } else if (key.isWritable()) { // 写事件
+              SocketChannel channel = (SocketChannel) key.channel();
+              HandleClient handle = (HandleClient) key.attachment();
+              ByteBuffer block = handle.readBlock();
+              if (block != null)
+                channel.write(block);
+              else {
+                handle.close();
+                channel.close();
+              }
+            }
+          }
+
+          public static void main(String[] args) {
+            int port = 12345;
+            try {
+              NIOServer server = new NIOServer(port);
+              System.out.println(&quot;Listernint on &quot; + port);
+              while (true) {
+                server.listen();
+              }
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+        } 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;4.2 client端&lt;/h3&gt;
+
+&lt;p&gt;下面是客户端请求的代码，也比较简单，模拟100个用户同时下载文件。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;package nio.file;
+        import java.io.IOException;
+        import java.net.InetSocketAddress;
+        import java.nio.ByteBuffer;
+        import java.nio.CharBuffer;
+        import java.nio.channels.SelectionKey;
+        import java.nio.channels.Selector;
+        import java.nio.channels.SocketChannel;
+        import java.nio.charset.Charset;
+        import java.nio.charset.CharsetEncoder;
+        import java.util.Iterator;
+        import java.util.concurrent.ExecutorService;
+        import java.util.concurrent.Executors;
+
+        /**
+         * 文件下载客户端
+         * @author tenyears.cn
+         */
+public class NIOClient {
+          static int SIZE = 100;
+          static InetSocketAddress ip = new InetSocketAddress(&quot;localhost&quot;,12345);
+          static CharsetEncoder encoder = Charset.forName(&quot;GB2312&quot;).newEncoder();
+          static class Download implements Runnable {
+            protected int index;
+            public Download(int index) {
+              this.index = index;
+            }
+
+            public void run() {
+              try {
+                long start = System.currentTimeMillis();
+                SocketChannel client = SocketChannel.open();
+                client.configureBlocking(false);
+                Selector selector = Selector.open();
+                client.register(selector, SelectionKey.OP_CONNECT);
+                client.connect(ip);
+                ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
+                int total = 0;
+                FOR: for (;;) {
+                  selector.select();
+                  Iterator&amp;lt;SelectionKey&amp;gt; iter = selector.selectedKeys()
+                      .iterator();
+                  while (iter.hasNext()) {
+                    SelectionKey key = iter.next();
+                    iter.remove();
+                    if (key.isConnectable()) {
+                      SocketChannel channel = (SocketChannel) key
+                          .channel();
+                      if (channel.isConnectionPending())
+                        channel.finishConnect();
+                      channel.write(encoder.encode(CharBuffer
+                          .wrap(&quot;Hello from &quot; + index)));
+                      channel.register(selector, SelectionKey.OP_READ);
+                    } else if (key.isReadable()) {
+                      SocketChannel channel = (SocketChannel) key
+                          .channel();
+                      int count = channel.read(buffer);
+                      if (count &amp;gt; 0) {
+                        total += count;
+                        buffer.clear();
+                      } else {
+                        client.close();
+                        break FOR;
+                      }
+                    }
+                  }
+                }
+                double last = (System.currentTimeMillis() - start) * 1.0 / 1000;
+                System.out.println(&quot;Thread &quot; + index + &quot; downloaded &quot; + total
+                    + &quot;bytes in &quot; + last + &quot;s.&quot;);
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+
+          public static void main(String[] args) throws IOException {
+            ExecutorService exec = Executors.newFixedThreadPool(SIZE);
+            for (int index = 0; index &amp;lt; SIZE; index++) {
+              exec.execute(new Download(index));
+            }
+            exec.shutdown();
+          }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>离职风波</title>
+     <link href="http://itweige.com/lizhifengbo"/>
+     <updated>2014-06-05T00:00:00+08:00</updated>
+     <id>http://itweige.com/lizhifengbo</id>
+     <content type="html">&lt;h3&gt;跳槽回忆录：Oracle--&gt;网易&lt;/h3&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogImages/tiaocao.jpg&quot; alt=&quot;跳槽&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;经历了一周的纠结与徘徊之后，终于决定跳了！不管如何，不管会遇到什么阻挠，这次真的是义无反顾了！大不了从头再来，我年轻我怕谁！失业又何妨。。。&lt;/p&gt;
+
+&lt;h4&gt;外企的生活&lt;/h4&gt;
+
+&lt;p&gt;可能真的不适合年轻人，尤其是怀揣着梦想的年轻人。外表轻松，内在无聊，真的学不到真正的技术，核心力量都在美国呢。我们可能做的就是剩下的琐碎的debug和test，无他。&lt;/p&gt;
+
+&lt;h4&gt;跳槽的过程&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;萌芽&lt;/strong&gt;：在外企的两个月每天保持学习，可是拓展的最多是广度，深度上真的无法提升，这也促成了我跳槽想法的萌芽。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;准备&lt;/strong&gt;：开始准备面试，每天晚上回去看一些java/jvm方面的较深入知识；写一些技术博客；看算法；看博客；记录博客中技术点，深入百度/google之；亲自动手调制各种软件。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;投递&lt;/strong&gt;：准备完成，投简历：搜狗/网易/百度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;面试&lt;/strong&gt;：网易彩票get/搜狗web get/百度web lose。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;offer选择&lt;/strong&gt;：最终选择了网易，可能还是面试过程中的技术主管给我留下了深刻印象吧，而且小组内有一个认识的北邮师兄。。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;辞职&lt;/strong&gt;：这真是个艰辛的过程，跟manager无数次的谈话，一次两次三次，失败了再谈，谈了再失败，最终第五次的时候摊牌了。。。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;感想&lt;/strong&gt;：真的感想颇多，但是语言组织不是强项，不会表达。反正就是要坚信自己的理想吧，凶狠点，事竟成！为了达到目的真的不能“仁慈”，坚决点！&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;很对不起manager，但是没办法，人各有志，我必须走了！&lt;br/&gt;
+很感谢 师兄/2鹏/东升/2超/小强 等小伙伴，在我失落的时候给了我跳槽的勇气和建议，我会努力雄起的！&lt;br/&gt;
+&lt;strong&gt;城镇服务性互联网&lt;/strong&gt;，我终将来到！&lt;br/&gt;
+&lt;img src=&quot;/images/blogImages/town-network.jpg&quot; alt=&quot;跳槽&quot; /&gt;&lt;br/&gt;
+纠结的日子终将过去，此刻感觉很释然。。。&lt;/p&gt;
+
+&lt;p&gt;2014/6/5 15:57:58 &lt;br/&gt;
+By Masterwind&lt;br/&gt;
+你好，北京&lt;/p&gt;
 </content>
    </entry>
    
@@ -216,16 +507,143 @@ while(keyIterator.hasNext()) {
      <link href="http://itweige.com/Java-Concurrent"/>
      <updated>2014-05-29T00:00:00+08:00</updated>
      <id>http://itweige.com/Java-Concurrent</id>
-     <content type="html">&lt;p&gt;带来Java.util.concurrent包的介绍：&lt;/p&gt;
+     <content type="html">&lt;h2&gt;背景&lt;/h2&gt;
+
+&lt;blockquote&gt;&lt;p&gt;　　java.util.concurrent 包含许多线程安全、测试良好、高性能的并发构建块。可以说：&lt;strong&gt;创建 java.util.concurrent 的目的就是要实现 Collection 框架对数据结构所执行的并发操作&lt;/strong&gt;。通过提供一组可靠的、高性能并发构建块，开发人员可以提高并发类的线程安全、可伸缩性、性能、可读性和可靠性。&lt;br/&gt;
+　　感谢Java并发大师：&lt;strong&gt;Doug Lea&lt;/strong&gt;!&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;1. 并发介绍&lt;/h2&gt;
+
+&lt;p&gt;JDK 5.0 中的并发改进可以分为三组：&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;并发集合类；&lt;/li&gt;
-&lt;li&gt;lock；&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;原子量；&lt;/p&gt;
-
-&lt;p&gt;先酝酿下，占个坑！&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;JVM 级别更改&lt;/strong&gt; : 大多数现代处理器对并发对某一硬件级别提供支持，通常以 compare-and-swap （CAS）指令形式。CAS 是一种低级别的、细粒度的技术，它允许多个线程更新一个内存位置，同时能够检测其他线程的冲突并进行恢复。它是许多高性能并发算法的基础。在 JDK 5.0 之前，Java 语言中用于协调线程之间的访问的惟一原语是同步，同步是更重量级和粗粒度的。公开 CAS 可以开发高度可伸缩的并发 Java 类。&lt;strong&gt;这些更改主要由 JDK 库类使用，而不是由开发人员使用&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;低级实用程序类 -- 锁定和原子类&lt;/strong&gt; : 使用 CAS 作为并发原语，ReentrantLock 类提供与 synchronized 原语相同的锁定和内存语义，然而这样可以更好地控制锁定（如计时的锁定等待、锁定轮询和可中断的锁定等待）和提供更好的可伸缩性（竞争时的高性能）。大多数开发人员将不再直接使用 ReentrantLock 类，而是使用在 ReentrantLock 类上构建的高级类。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;高级实用程序类&lt;/strong&gt; : 这些类实现并发构建块，每个计算机科学文本中都会讲述这些类 -- 信号、互斥、闩锁、屏障、交换程序、线程池和线程安全集合类等。大部分开发人员都可以在应用程序中用这些类，来替换许多（如果不是全部）同步、wait() 和 notify() 的使用，从而提高性能、可读性和正确性。&lt;/li&gt;
 &lt;/ul&gt;
 
+
+&lt;p&gt;　　本文将重点介绍 java.util.concurrent 包提供的高级实用程序类,其中包括：线程安全集合、线程池和同步实用程序。这些是初学者和专家都可以使用的&quot;现成&quot;类。&lt;strong&gt;java.util.concurrent 规范进程的一个目标就是提供一组线程安全的、高性能的并发构建块，从而使开发人员能够减轻一些编写线程安全类的负担。&lt;/strong&gt;
+在介绍concurrent包之前先看一下jdk中需要了解的包截图（推荐边看源码，边学习）：&lt;br/&gt;
+&lt;img src=&quot;/images/projectImage/java-concurrent-packege.png&quot; alt=&quot;JDK包截图&quot; /&gt;&lt;/p&gt;
+
+&lt;h3&gt;1.1 java.util集合&lt;/h3&gt;
+
+&lt;p&gt;　　java.util包对应java所有的collection集合，JDK 1.2 中引入的 Collection 框架是一种表示对象集合的高度灵活的框架，它使用基本接口 List、Set 和 Map。通过 JDK 提供每个集合的多次实现（HashMap、Hashtable、TreeMap、WeakHashMap、HashSet、TreeSet、Vector、ArrayList、LinkedList 等等）。其中一些集合已经是线程安全的（Hashtable 和 Vector），通过同步的封装工厂（Collections.synchronizedMap()、synchronizedList() 和 synchronizedSet()），其余的集合均可表现为线程安全的。&lt;br/&gt;
+　　java.util 中的线程集合仍有一些缺点。其中的“貌似线程安全集合”（如Hashtable,Vector等），如果没有任何线程在读取，则支持使用多个并发进程写入。&lt;strong&gt;但是：如果使用一个或多个读取器以及一个或多个编写器，则同步包装不提供线程安全的访问。java.util 包中的集合类都返回 fail-fast 迭代器，这意味着它们假设线程在集合内容中进行迭代时，集合不会更改它的内容&lt;/strong&gt;。如果 fail-fast 迭代器检测到在迭代过程中进行了更改操作，那么它会抛出 ConcurrentModificationException，这是不可控异常，此时这些“貌似线程安全集合”就变成了线程不安全集合。&lt;/p&gt;
+
+&lt;h3&gt;1.2 java.util.concurrent&lt;/h3&gt;
+
+&lt;p&gt;　　java.util.concurrent 包添加了多个新的线程安全集合类（ConcurrentHashMap、CopyOnWriteArrayList 和 CopyOnWriteArraySet）。这些类的目的是提供高性能、高度可伸缩性、线程安全的基本集合类型版本。&lt;br/&gt;
+　　java.util.concurrent 集合返回的迭代器称为弱一致的（weakly consistent）迭代器。对于这些类，如果元素自从迭代开始已经删除，且尚未由 next() 方法返回，那么它将不返回到调用者。如果元素自迭代开始已经添加，那么它可能返回调用者，也可能不返回。在一次迭代中，无论如何更改底层集合，元素不会被返回两次。&lt;br/&gt;
+　　&lt;strong&gt;在 JDK 5.0 之前，确保线程安全的主要机制是 synchronized 原语。访问共享变量（那些可以由多个线程访问的变量）的线程必须使用同步来协调对共享变量的读写访问。java.util.-concurrent 包提供了一些备用并发原语，以及一组不需要任何其他同步的线程安全实用程序类。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2&gt;2. 详解Concurrent--CopyOnWriteArrayList&lt;/h2&gt;
+
+&lt;blockquote&gt;&lt;p&gt;我们都知道，可以用两种方法创建线程安全支持数据的 List：&lt;br/&gt;
+1. Vector&lt;br/&gt;
+2.Collections.synchronizedList()封装一个list。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3&gt;2.1 为何vector不够安全？&lt;/h3&gt;
+
+&lt;p&gt;　　在java.util.concurrent 包中添加了名称繁琐的 &lt;strong&gt;CopyOnWriteArrayList&lt;/strong&gt;。为什么我们想要新的线程安全的List类？为什么Vector还不够？&lt;br/&gt;
+　　最简单的答案是与迭代和并发修改之间的交互有关。使用 Vector 或使用同步的 List 封装器，返回的迭代器是 fail-fast 的，这意味着如果在迭代过程中任何其他线程修改 List，迭代可能失败。&lt;strong&gt;也就是说在读的同时不能对集合本身进行操作（如添加，修改等）。&lt;/strong&gt;&lt;br/&gt;
+　　Vector 的非常普遍的应用程序是存储通过组件注册的监听器的列表。当发生适合的事件时，该组件将在监听器的列表中迭代，调用每个监听器。为了防止 ConcurrentModificationException，迭代线程必须复制列表或锁定列表，以便进行整体迭代，而这两种情况都需要大量的性能成本。那么怎么解决这种并发问题呢？这也就就引出了CopyOnWriteArrayList来解决此类问题。&lt;/p&gt;
+
+&lt;h3&gt;2.2 CopyOnWriteArrayList的引入&lt;/h3&gt;
+
+&lt;p&gt;　　CopyOnWriteArrayList 类通过每次添加或删除元素时创建支持数组的新副本，避免了这个问题，但是进行中的迭代保持对创建迭代器时的本体进行操作。虽然复制也会有一些成本，但是在许多情况下，迭代要比修改多得多，在这些情况下，写入时复制要比其他备用方法具有更好的性能和并发性。如果应用程序需要 Set 语义，而不是 List，那么还有一个 Set 版本 -- CopyOnWriteArraySet。&lt;br/&gt;
+　　&lt;strong&gt;这些集合在读的时候跟普通集合一样不加锁&lt;/strong&gt;，在修改集合操作（如写，删）等时，则会用lock拿到当前集合的集合锁：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;final ReentrantLock lock = this.lock;
+lock.lock();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;　　拿到集合锁之后，此时互斥的只是其他的写操作，而读操作不受任何影响可以并发同时进行。下面是一个其中的方法供参考：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; public E set(int index, E element) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            Object[] elements = getArray();
+            E oldValue = get(elements, index);
+            if (oldValue != element) {
+                int len = elements.length;
+                Object[] newElements = Arrays.copyOf(elements, len); //要先进行原数组的拷贝，这样读操作可以在原数组上进行，写操作在拷贝上进行
+                newElements[index] = element;
+                setArray(newElements);
+            } else {
+                // Not quite a no-op; ensures volatile write semantics
+                setArray(elements);
+            }
+            return oldValue;
+        } finally {
+            lock.unlock();
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;2.3 Vector与CopyOnWriteArrayList的比较&lt;/h3&gt;
+
+&lt;p&gt;　　前者因为使用Synchronized修饰了所有内部方法，所以读和写只能某一时刻只有一个线程来执行。而后者允许多个读操作同时进行，且允许同时有一个写操作进行，因为写操作是在数组的副本上进行的，只有写操作互斥，与读操作不互斥。且Vector可能会发生ConcurrentModificationException，而后者不会。&lt;/p&gt;
+
+&lt;h2&gt;3. 详解Concurrent--ConcurrentHashMap&lt;/h2&gt;
+
+&lt;p&gt;　　正如已经存在线程安全的 List 的实现，您可以用多种方法创建线程安全的、基于 hash 的 Map -- Hashtable，并使用 Collections.synchronizedMap() 封装 HashMap。JDK 5.0 添加了 ConcurrentHashMap 实现，该实现提供了相同的基本线程安全的 Map 功能，但它大大提高了并发性。&lt;br/&gt;
+　　Hashtable 和 synchronizedMap 所采取的获得同步的简单方法（同步 Hashtable 中或者同步的 Map 封装器对象中的每个方法）有两个主要的不足:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;首先，Hashtable 和 Collections.synchronizedMap 通过同步每个方法获得线程安全。这意味着当一个线程执行一个 Map 方法时，无论其他线程要对 Map 进行什么样操作，都不能执行，直到第一个线程结束才可以。&lt;/li&gt;
+&lt;li&gt;同时，这样仍不足以提供真正的线程安全性，许多公用的混合操作仍然需要额外的同步。虽然诸如 get() 和 put() 之类的简单操作可以在不需要额外同步的情况下安全地完成，但还是有一些公用的操作序列，例如迭代或者 put-if-absent（空则放入），需要外部的同步，以避免数据争用。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;　　对比来说，当多个线程需要访问同一Map 时，ConcurrentHashMap可以获得更高的并发性。&lt;br/&gt;
+　　&lt;strong&gt;ConcurrentHashMap允许多个读操作并发进行，读操作并不需要加锁:&lt;/strong&gt;如果使用传统的技术，如HashMap中的实现，如果允许可以在hash链的中间添加或删除元素，读操作不加锁将得到不一致的数据。ConcurrentHashMap实现技术是保证HashEntry几乎是不可变的。HashEntry代表每个hash链中的一个节点，其结构如下所示：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static final class HashEntry&amp;lt;K,V&amp;gt; {  
+    final K key;  
+    final int hash;  
+    volatile V value;  
+    final HashEntry&amp;lt;K,V&amp;gt; next;  
+}  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;　　可以看到除了value不是final的，其它值都是final的，这意味着不能从hash链的中间或尾部添加或删除节点，因为这需要修改next引用值，所有的节点的修改只能从头部开始。对于put操作，可以一律添加到Hash链的头部。但是对于remove操作，可能需要从中间删除一个节点，这就需要将要删除节点的前面所有节点整个复制一遍，最后一个节点指向要删除结点的下一个结点。这在讲解删除操作时还会详述。为了确保读操作能够看到最新的值，将value设置成volatile，这避免了加锁。&lt;br/&gt;
+　　&lt;strong&gt;ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了锁分离技术:&lt;/strong&gt;它使用了多个锁来控制对hash表的不同部分进行的修改。ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的hash table，它们有自己的锁。&lt;strong&gt;只要多个修改操作发生在不同的段上，它们就可以并发进行。&lt;/strong&gt;&lt;br/&gt;
+　　在大多数情况下，ConcurrentHashMap 是 Hashtable或 Collections.synchronizedMap-(new HashMap()) 的简单替换。然而，其中有一个显著不同，即 ConcurrentHashMap 实例中的同步不锁定映射进行独占使用。实际上，没有办法锁定 ConcurrentHashMap 进行独占使用，它被设计用于进行并发访问。为了使集合不被锁定进行独占使用，还提供了公用的混合操作的其他（原子）方法，如 put-if-absent。ConcurrentHashMap 返回的迭代器是弱一致的，意味着它们将不抛出ConcurrentModificationException。可以通过下图说明：&lt;br/&gt;
+&lt;img src=&quot;/images/projectImage/Java-hashMap-concurrentHashMap.jpg&quot; alt=&quot;JDK包截图&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;ConcurrentHashMap的源码可以自行查看JDK源码，有点麻烦，这里就不举例了～。～关于其实现细节可以参考：
+&lt;a href=&quot;http://www.iteye.com/topic/344876&quot; title=&quot;ConcurrentHashMap之实现细节&quot;&gt;ConcurrentHashMap之实现细节&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;4.详解Concurrent--线程池ThreadPoolExecutor&lt;/h2&gt;
+
+&lt;p&gt;关于线程池的讲解已经在前面的文章中给出了：&lt;a href=&quot;http://itweige.com/Java-Thread/&quot; title=&quot;伟哥教你破解--Java线程谜团&quot;&gt;伟哥教你破解--Java线程谜团&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;5. 详解Concurrent.locks--ReentrantLock&lt;/h2&gt;
+
+&lt;p&gt;　　ReentrantLock 是具有与隐式监视器锁定（使用 synchronized 方法和语句访问）相同的基本行为和语义的 Lock 的实现，但它具有扩展的能力。&lt;br/&gt;
+　　作为额外收获，在竞争条件下，ReentrantLock 的实现要比现在的 synchronized 实现更具有可伸缩性。（有可能在 JVM 的将来版本中改进 synchronized 的竞争性能。）&lt;br/&gt;
+　　&lt;strong&gt;这意味着当许多线程都竞争相同锁定时，使用 ReentrantLock 的吞吐量通常要比 synchronized好&lt;/strong&gt;。换句话说，当许多线程试图访问 ReentrantLock 保护的共享资源时，JVM 将花费较少的时间来调度线程，而用更多个时间执行线程。&lt;br/&gt;
+　　虽然 ReentrantLock 类有许多优点，但是与同步相比，它有一个主要缺点 -- 它可能忘记释放锁定。建议当获得和释放 ReentrantLock 时使用下列结构：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Lock lock = new ReentrantLock();
+...
+lock.lock();
+try {
+  // perform operations protected by lock
+}
+catch(Exception ex) {
+ // restore invariants
+}
+finally {
+  lock.unlock();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;　　因为锁定失误（忘记释放锁定）的风险，所以对于基本锁定，强烈建议您继续使用 synchronized，除非真的需要 ReentrantLock 额外的灵活性和可伸缩性。&lt;br/&gt;
+　　ReentrantLock 是用于高级应用程序的高级工具 -- 有时需要，但有时用原来的方法就很好。几乎 java.util.concurrent 中的所有类都是在 ReentrantLock 之上构建的，ReentrantLock 则是在原子变量类的基础上构建的。所以，虽然仅少数并发专家使用原子变量类，但 java.util.concurrent 类的很多可伸缩性改进都是由它们提供的。&lt;/p&gt;
 </content>
    </entry>
    
@@ -1465,23 +1883,6 @@ push.io也是一个很出名的推送服务平台，已经成功推送了60亿�
 3.然后把此push下发到子服务
 4.子服务在连接池里查找有没有发送对象
 5.发送到对应的客户端并删除数据库里对应的数据&lt;/p&gt;&lt;/blockquote&gt;
-</content>
-   </entry>
-   
-   <entry>
-     <title>伤心情歌--杨宗纬</title>
-     <link href="http://itweige.com/GoodSongs"/>
-     <updated>2014-05-12T00:00:00+08:00</updated>
-     <id>http://itweige.com/GoodSongs</id>
-     <content type="html">&lt;h3&gt;今天发现几首不错的杨宗纬的歌曲，听得很有感觉，推荐大家去听下：&lt;/h3&gt;
-
-&lt;h4&gt;《其实都没有》&lt;/h4&gt;
-
-&lt;h4&gt;《初爱》&lt;/h4&gt;
-
-&lt;h4&gt;《给未来的自己》&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogImages/yzw.jpg&quot; title=&quot;催泪歌王：杨宗纬&quot; alt=&quot;杨宗纬&quot; /&gt;&lt;/p&gt;
 </content>
    </entry>
    
