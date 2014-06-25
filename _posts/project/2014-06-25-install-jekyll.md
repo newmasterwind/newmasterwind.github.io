@@ -4,7 +4,8 @@ title : 本地搭建jekyll环境
 description : 记录下搭建本地jekyll环境的过程，留作备忘。
 category : project
 ---
- ####Ruby和Jekyll安装  
+
+####Ruby和Jekyll安装  
 
 1.下载Ruby和Devkit，地址：[http://rubyinstaller.org/downloads/](http://rubyinstaller.org/downloads/ "http://rubyinstaller.org/downloads/")  
 2.安装，随便路径：如c:\Ruby200  c:/Devkit  
