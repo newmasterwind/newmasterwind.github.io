@@ -8,10 +8,14 @@ category : project
 ####Ruby和Jekyll安装  
 
 1.下载Ruby和Devkit，地址：[http://rubyinstaller.org/downloads/](http://rubyinstaller.org/downloads/ "http://rubyinstaller.org/downloads/")  
+
 2.安装，随便路径：如c:\Ruby200  c:/Devkit  
+
 3.配置好环境变量：path中加入C:\Ruby200\bin  
+
 4.cd到Devkit目录，运行 ruby dk.rb init 产生config.yml文件：  
 ![](/images/projectImage/ruby_install.png)  
+
 5.对产生的config.yml文件编辑，以引入ruby，文件内容如下：  
 
 	# This configuration file contains the absolute path locations of all
@@ -37,8 +41,8 @@ category : project
 7.安装jekyll：
 
 	gem install jekyll
-8.安装完成，可以使用jekyll了，跳转到blog目录，运行：
+8.安装完成，可以使用jekyll了(将jekyll目录，如：C:\Ruby\lib\ruby\gems\2.0.0\gems\jekyll-2.1.0 加入到path中)，跳转到blog目录，运行：
 
-	jekyll serve
+	jekyll serve --watch
 
 访问：localhost4000 完毕。
