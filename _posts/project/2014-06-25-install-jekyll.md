@@ -34,9 +34,11 @@ category : project
 	---
 	- C:/Ruby200
 
-6.执行命令：
+6.跳转到Devkit的安装目录，如：cd c:/Devkit ，然后执行命令：
 
-	ruby dk.rb install 
+	ruby dk.rb install  
+
+完成后会在Ruby目录：C:/Ruby200/lib/ruby/site_ruby/ 下产生一个devkit.rb 文件。（不用管它干嘛用的）
  
 7.安装jekyll：
 
