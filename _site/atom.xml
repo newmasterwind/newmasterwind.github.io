@@ -4,13 +4,31 @@
    <title>疯子伟哥的世界</title>
    <link href="http://www.itweige.com/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://www.itweige.com" rel="alternate" type="text/html" />
-   <updated>2014-07-03T17:54:32+08:00</updated>
+   <updated>2014-07-04T11:13:56+08:00</updated>
    <id>http://www.itweige.com</id>
    <author>
      <name></name>
      <email></email>
    </author>
 
+   
+   <entry>
+     <title>开发小经验</title>
+     <link href="http://itweige.com/DoYouKownThese"/>
+     <updated>2014-07-04T00:00:00+08:00</updated>
+     <id>http://itweige.com/DoYouKownThese</id>
+     <content type="html">&lt;blockquote&gt;&lt;p&gt;这里记录的都是一些比较幼稚的问题，看了您觉得幼稚的话，别当真，见笑了~。~&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;SVN提交问题&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;为啥我用eclipse svn插件checkout的工程不能用SVN客户端提交啊？为啥工程文件夹上没显示svn的标示呢？&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;　&lt;strong&gt;答&lt;/strong&gt;：SVN客户端的版本号跟Eclipse svn插件的版本号不一致，可以在工程文件夹上右击--&gt;svn upgrade working copy即可。&lt;/p&gt;
+</content>
+   </entry>
    
    <entry>
      <title>伤心情歌--孙燕姿</title>
@@ -66,10 +84,12 @@
 - C:/Ruby200
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;6.执行命令：&lt;/p&gt;
+&lt;p&gt;6.跳转到Devkit的安装目录，如：cd c:/Devkit ，然后执行命令：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;ruby dk.rb install 
+&lt;pre&gt;&lt;code&gt;ruby dk.rb install  
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;完成后会在Ruby目录：C:/Ruby200/lib/ruby/site_ruby/ 下产生一个devkit.rb 文件。（不用管它干嘛用的）&lt;/p&gt;
 
 &lt;p&gt;7.安装jekyll：&lt;/p&gt;
 
@@ -1476,48 +1496,6 @@ var obj = new Object();
 &lt;li&gt;&lt;a href=&quot;http://www.w3school.com.cn/js/pro_js_inheritance_implementing.asp&quot;&gt;http://www.w3school.com.cn/js/pro_js_inheritance_implementing.asp&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-</content>
-   </entry>
-   
-   <entry>
-     <title>深夜杂念：程序人生</title>
-     <link href="http://itweige.com/programmer-thoughts"/>
-     <updated>2014-05-17T00:00:00+08:00</updated>
-     <id>http://itweige.com/programmer-thoughts</id>
-     <content type="html">&lt;h3&gt;夜深人静，思绪静下来，总结一下今天的程序人生见闻和思考，留作日后备注：&lt;/h3&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogImages/programmer.jpg&quot; alt=&quot;程序员&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;记录几点有意义的心得：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;所谓专家，就是在一个有限的领域里，把所有的错误都犯过一次。&lt;/li&gt;
-&lt;li&gt;和提高技术能力同等重要的是，深入学习、理解自己所在的行业，理解产业链的上下游、公司的运营方式、产品的赢利模式。&lt;/li&gt;
-&lt;li&gt;但管努力，莫问前程。&lt;/li&gt;
-&lt;li&gt;动手永远高于理念，看100本系统架构书不如自己去亲手搭一遍来的实在。&lt;/li&gt;
-&lt;li&gt;还有就是我真的想去 &lt;strong&gt;百度/小米&lt;/strong&gt; 这种公司挑战下自己了,外企的生活对于年轻人就是美丽的“围城”。&lt;/li&gt;
-&lt;li&gt;木桶效应：周围木桶板的高度决定了你对木桶存在的价值。&lt;/li&gt;
-&lt;li&gt;很多时候，半途而废的背后就是只差一步，要坚持；克服问题，不退缩。&lt;/li&gt;
-&lt;li&gt;要有“说做就做”的勇气。&lt;/li&gt;
-&lt;li&gt;但如果要开发一些底层的软件，大型的系统的时候，就必须用到C、C++、汇编等开发语言，这是成功尖端人才的一个条件。&lt;/li&gt;
-&lt;li&gt;《计算机操作系统》这本书真是个经典。&lt;/li&gt;
-&lt;li&gt;日三省乎己：每日睡觉失眠的时候，掏出云笔记反省下今日学到的东西。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;身体是革命的本钱。&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;br&gt;
-明天买的200多块钱的书要到了，又可以恶补一番了～。～  &lt;br/&gt;
-时间不早了，晚安北京。&lt;strong&gt;May 17 2014 1:55 AM&lt;/strong&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;最后推荐一篇博文，关于web系统开发的文章：&lt;br/&gt;
-&lt;a href=&quot;http://programmers.stackexchange.com/questions/46716/what-technical-details-should-a-programmer-of-a-web-application-consider-before&quot;&gt;What technical details should a programmer of a web application consider before making the site public?&lt;/a&gt;&lt;/p&gt;
 </content>
    </entry>
    
