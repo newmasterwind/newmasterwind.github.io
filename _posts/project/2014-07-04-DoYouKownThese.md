@@ -54,3 +54,57 @@ category : project
 		}
 <hr/>
 
+###代码初期少复制
+　　**在学习一门语言的初期甚至中期，不要总是觉得哪个地方曾经有这么一段代码，然后就去找，找到了copy过来当做模板进行修改。**这样会严重损害你对这门语言的熟悉程度，培养了惰性，试想如果你每一次都去找，去copy再修改，可能在初期还挺快，但是如果你通过若干次的手打之后已经练得炉火纯青，那么你的效率远比“找+copy+改”来的更快更准确。  
+
+　　如下一段代码，第一次用时我们可以找到它，然后照着写，第二次就可以记忆着写忘了再回来看下，第三次就磕磕绊绊写完了，在以后可能根本不用找就自己秒写出来了。所以说：**不要懒惰，尝试着去挑战一些东西，你会拥有它，而不是见过它。**
+
+	$(function(){
+	
+	    $('#send').click(function(){
+	
+	         $.ajax({
+	
+	             type: "GET",
+	
+	             url: "test.json",
+	
+	             data: {username:$("#username").val(), content:$("#content").val()},
+	
+	             dataType: "json",
+	
+	             success: function(data){
+	
+	                         $('#resText').empty();   //清空resText里面的所有内容
+	
+	                         var html = ''; 
+	
+	                         $.each(data, function(commentIndex, comment){
+	
+	                               html += '<div class="comment"><h6>' + comment['username']
+	
+	                                         + ':</h6><p class="para"' + comment['content']
+	
+	                                         + '</p></div>';
+	
+	                         });
+	
+	                         $('#resText').html(html);
+	
+	                      }
+	
+	         });
+	
+	    });
+	
+	});
+<hr>
+
+###活用“死”变量
+举例说明,例如：
+
+	String flag = xxxx;
+	if("true".equals(flag)){
+		xxxx;
+	}
+因为flag如果为null则会抛出nullpointerException，而如果把"死变量"放前面则不会出现这种问题。
