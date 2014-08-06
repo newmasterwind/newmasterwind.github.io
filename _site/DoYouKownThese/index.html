@@ -171,6 +171,21 @@
 });
 </code></pre>
 
+<hr>
+
+
+<h3>活用“死”变量</h3>
+
+<p>举例说明,例如：</p>
+
+<pre><code>String flag = xxxx;
+if("true".equals(flag)){
+    xxxx;
+}
+</code></pre>
+
+<p>因为flag如果为null则会抛出nullpointerException，而如果把"死变量"放前面则不会出现这种问题。</p>
+
 		<div id="disqus_container">
             <div style="margin-bottom:20px" class="right">
                 <script type="text/javascript" charset="utf-8">
@@ -206,6 +221,8 @@
     	<span class="sideNavTitle">全站导航</span>
         <h2>生活滴水</h2>
         <ul class="artical-list">
+        
+            <li><a href="/mowangchuzhong">莫忘初衷</a></li>
         
             <li><a href="/GoodSongs-2">伤心情歌--孙燕姿</a></li>
         
